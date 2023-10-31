@@ -45,10 +45,10 @@ Repozitorij napravljen u svrhu laboratorijskih vježbi kolegija Otvoreno računa
 > - **godina_osnutka**: Godina osnutka parka.
 > - **povrsina**: Površina parka u km².
 > - **naziv_vrh**: Najviši vrh parka. Može biti *null* jer neki parkovi nemaju vrh.
-> - **visina_vrh** : Visina vrha.
+> - **visina_vrh** : Visina vrha u metrima ( m ). Može biti *null* jer neki parkovi nemaju vrh
 > - **zupanija**: U kojoj županiji ili županijama se park nalazi.
 > - **atrakcija**: Najpoznatija atrakcija.
-> - **dogadjaj_godine**: Najpoznatiji događaj za posjetitelje u godini.
+> - **dogadjaj_godine**: Najpoznatiji događaj u godini.
 > - **naziv_zivotinja**: Neke od životinja koje se može vidjeti u parku.
 > - **vrsta_zivotinja**: sisavac, gmaz, ptica, vodozemac itd.
 
