@@ -1,8 +1,6 @@
 package or.labos.application.controller;
 
 import or.labos.application.dto.ParkDto;
-import or.labos.application.entity.AnimalEntity;
-import or.labos.application.entity.CountyEntity;
 import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,99 +8,189 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/park")
+@RequestMapping(value = "/")
 public class ParkController {
 
     @Autowired
     private ParkService parkService;
 
     @CrossOrigin
-    @GetMapping(value= "")
+    @GetMapping(value= "/parks")
     public ResponseEntity<List<ParkDto>> listParks(){
-
-        /*List<ParkEntity> parks = parkService.listAll();
-
-
-        List<ParkDto> listParksDto = parks.stream()
-                .map(park -> {
-                    if(!Objects.isNull(park.getPeakOfPark())){
-                        return new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(),park.getPeakOfPark().getPeakName(), park.getPeakOfPark().getPeakHeight(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
-
-                    }else{
-                        return new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
-
-                    }
-                })
-                .toList();
-
-        return ResponseEntity
-                .ok()
-                .body(listParksDto);*/
 
         List<ParkEntity> parks = parkService.listAll();
 
-        List<ParkDto> listParksDto = parks.stream()
-                .map(park -> {
 
-                    List<Map<String, String>> animals = park.getParkAnimals()
-                            .stream()
-                            .map(animal -> {
-                                Map<String, String> animalMap = new TreeMap<>();
-                                animalMap.put("name", animal.getAnimalName());
-                                animalMap.put("species", animal.getSpeciesOfAnimal());
-                                return animalMap;
-                            })
-                            .collect(Collectors.toList());
+        List<ParkDto> parkDtos = new ArrayList<>();
 
+        parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
+            if (!Objects.isNull(park.getPeakOfPark())) {
+                parkDtos.add(new ParkDto(
+                        park.getParkName(),
+                        park.getTypeOfPark().getTypeOfParkName(),
+                        park.getYearOfFoundation(),
+                        park.getArea(),
+                        park.getPeakOfPark().getPeakName(),
+                        park.getPeakOfPark().getPeakHeight(),
+                        countyEntity.getCountyName(),
+                        park.getAtraction(),
+                        park.getEvent(),
+                        animalEntity.getAnimalName(),
+                        animalEntity.getSpeciesOfAnimal()
+                ));
+            } else {
+                parkDtos.add(new ParkDto(
+                        park.getParkName(),
+                        park.getTypeOfPark().getTypeOfParkName(),
+                        park.getYearOfFoundation(),
+                        park.getArea(),
+                        countyEntity.getCountyName(),
+                        park.getAtraction(),
+                        park.getEvent(),
+                        animalEntity.getAnimalName(),
+                        animalEntity.getSpeciesOfAnimal()
+                ));
+            }
+        })));
+
+        return ResponseEntity.ok().body(parkDtos);
+    }
+
+    @CrossOrigin
+    @GetMapping(value = "/search/{attribute}/{value}")
+    public ResponseEntity<List<ParkDto>> fetch(@PathVariable(value = "attribute") String attribute, @PathVariable(value = "value") String value){
+
+        List<ParkEntity> parks = null;
+
+        switch (attribute) {
+            case "parkName":
+                parks = parkService.findByParkNameIgnoreCase(value);
+                break;
+            case "typeOfPark":
+                parks =  parkService.findByTypeOfParkTypeOfParkNameIgnoreCase(value);
+                break;
+            case "yearOfFoundation":
+                parks =  parkService.findByYearOfFoundation(value);
+                break;
+            case "area":
+                parks =  parkService.findByAreaEquals(Double.valueOf(value));
+                break;
+            case "peakName":
+                parks =  parkService.findByPeakOfParkPeakNameIgnoreCase(value);
+                break;
+            case "peakHeight":
+                parks =  parkService.findByPeakOfParkPeakHeight(value);
+                break;
+            case "countyName":
+                parks =  parkService.findAllByCountyIgnoreCase(value);
+                break;
+            case "atraction":
+                parks =  parkService.findByAtractionIgnoreCase(value);
+                break;
+            case "event":
+                parks =  parkService.findByEventIgnoreCase(value);
+                break;
+            case "animalName":
+                parks =  parkService.findByParkAnimalsNameIgnoreCase(value);
+                break;
+            case "speciesOfAnimal":
+                parks =  parkService.findByParkAnimalsSpeciesIgnoreCase(value);
+                break;
+            case "wildcard" :
+                parks = parkService.findByAllAttributesWithoutPeak(value);
+                parks.addAll(parkService.findByAllAttributesWithPeak(value));
+                break;
+            default:
+                break;
+        }
+        
+        List<ParkDto> parkDtos = new ArrayList<>();
+
+        parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
+            if (!Objects.isNull(park.getPeakOfPark())) {
+                parkDtos.add(new ParkDto(
+                        park.getParkName(),
+                        park.getTypeOfPark().getTypeOfParkName(),
+                        park.getYearOfFoundation(),
+                        park.getArea(),
+                        park.getPeakOfPark().getPeakName(),
+                        park.getPeakOfPark().getPeakHeight(),
+                        countyEntity.getCountyName(),
+                        park.getAtraction(),
+                        park.getEvent(),
+                        animalEntity.getAnimalName(),
+                        animalEntity.getSpeciesOfAnimal()
+                ));
+            } else {
+                parkDtos.add(new ParkDto(
+                        park.getParkName(),
+                        park.getTypeOfPark().getTypeOfParkName(),
+                        park.getYearOfFoundation(),
+                        park.getArea(),
+                        countyEntity.getCountyName(),
+                        park.getAtraction(),
+                        park.getEvent(),
+                        animalEntity.getAnimalName(),
+                        animalEntity.getSpeciesOfAnimal()
+                ));
+            }
+        })));
+
+        return ResponseEntity.ok().body(parkDtos);
+
+    }
+
+    /*@CrossOrigin
+    @PostMapping(value = "/{attribute}/{value}")
+    public ResponseEntity<List<ParkDto>> fetch(@PathVariable(value = "attribute") String atribute, @PathVariable(value = "value") String value){
+
+        System.out.println(atribute + " " + value);
+
+        List<ParkEntity> parks =  parkService.findByAtribute(atribute, value);
+
+        List<ParkDto> parkDtos = new ArrayList<>();
+
+        parks.forEach(park -> {
+            park.getParkAnimals().forEach(animalEntity -> {
+                park.getParkCounties().forEach(countyEntity -> {
                     if (!Objects.isNull(park.getPeakOfPark())) {
-                        return new ParkDto(
+                        parkDtos.add(new ParkDto(
                                 park.getParkName(),
                                 park.getTypeOfPark().getTypeOfParkName(),
                                 park.getYearOfFoundation(),
                                 park.getArea(),
                                 park.getPeakOfPark().getPeakName(),
                                 park.getPeakOfPark().getPeakHeight(),
-                                park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),
+                                countyEntity.getCountyName(),
                                 park.getAtraction(),
                                 park.getEvent(),
-                                animals
-                        );
+                                animalEntity.getAnimalName(),
+                                animalEntity.getSpeciesOfAnimal()
+                        ));
                     } else {
-                        return new ParkDto(
+                        parkDtos.add(new ParkDto(
                                 park.getParkName(),
                                 park.getTypeOfPark().getTypeOfParkName(),
                                 park.getYearOfFoundation(),
                                 park.getArea(),
-                                park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),
+                                countyEntity.getCountyName(),
                                 park.getAtraction(),
                                 park.getEvent(),
-                                animals
-                        );
+                                animalEntity.getAnimalName(),
+                                animalEntity.getSpeciesOfAnimal()
+                        ));
                     }
-                })
-                .toList();
+                });
+            });
+        });
 
-        return ResponseEntity.ok().body(listParksDto);
-    }
+        return ResponseEntity.ok().body(parkDtos);
 
-    @CrossOrigin
-    @GetMapping(value = "/{parkName}")
-    public ResponseEntity<ParkDto> fetch(@PathVariable(value = "parkName") String parkName){
-
-        ParkEntity park = parkService.findByParkName(parkName);
-
-        ParkDto parkDto;
-
-        if(!Objects.isNull(park.getPeakOfPark())) parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getArea(), park.getPeakOfPark().getPeakName(), park.getPeakOfPark().getPeakHeight(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
-        else parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getArea(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
+    }*/
 
 
-        if(parkName != null) return ResponseEntity.ok(parkDto);
-        else return ResponseEntity.badRequest().build();
-    }
 
 
 }

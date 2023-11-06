@@ -26,6 +26,6 @@ public class AnimalEntity {
     @Column(name = "vrstazivotinja")
     private String speciesOfAnimal;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "parkAnimals")
     Set<ParkEntity> hasAnimal;
 }

@@ -40,13 +40,13 @@ public class ParkEntity {
     @JoinColumn(name = "sifvrh", referencedColumnName = "sifvrh")
     private HighestPeakEntity peakOfPark;
 
-   @ManyToMany
-   @JoinTable(
+    @ManyToMany
+    @JoinTable(
             name = "nalazise",
             joinColumns = @JoinColumn(name = "sifpark"),
             inverseJoinColumns = @JoinColumn(name = "sifzupanija")
-   )
-   Set<CountyEntity> parkCounties;
+    )
+    Set<CountyEntity> parkCounties;
 
     @ManyToMany
     @JoinTable(

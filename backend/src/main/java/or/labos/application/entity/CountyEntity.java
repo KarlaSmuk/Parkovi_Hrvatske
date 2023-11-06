@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.Set;
 
+
 @Entity
 @Table(name = "zupanije")
 @Getter
@@ -24,7 +25,7 @@ public class CountyEntity {
     @Column(name = "nazzupanija")
     private String countyName;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "parkCounties")
     Set<ParkEntity> hasCounty;
 
 }
