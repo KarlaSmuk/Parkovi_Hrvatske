@@ -1,12 +1,102 @@
+
+
 body{
     margin: 4em;
+    font-family: sans-serif;
 }
 
-table, tr, td, th{
-    border: 1px solid grey;
+
+table{
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
-th h4{
-    width: max-content;
+table thead{
+    font-size: 1.1em;
+    
 }
 
+table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+  
+th, td {
+    padding: 12px 15px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.search-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+}
+
+input{
+    width: 40vw;
+    height: 5vh;
+    margin-bottom: 0.2em;
+    margin-top: 0.5em;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.title-input{
+    font-size: 1em;
+    letter-spacing: 1px;
+}
+
+.footer-input{
+    font-size: 0.6em;
+    letter-spacing: 0.5px;
+    color: grey;
+}
+
+.column-selector {
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    width: 30vw;
+    height: 4vh;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.download-buttons-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0.8em 0;
+
+}
+
+.download-buttons-container button:first-child{
+    margin-bottom: 0.8em;
+}
+
+.download-buttons-container button{
+    width: 25vw;
+    height: 4vh;
+    text-align: start;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.download-buttons-container button:hover, select{
+    cursor: pointer;
+}

@@ -5,23 +5,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="css/datatable.css">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"> -->
   <link rel="stylesheet" type="text/css" href="css/datatable.css" />
 
-  <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
-  <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script> -->
+  <!-- <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> -->
   <script defer src="js/app.js"></script>
 
   <title>Datatable</title>
 </head>
 
-<body onload="fetchAll()">
+<body onload="fetchAll()"><!---->
 
+  <div class="search-container">
 
+    <span class="title-input">Polje za pretragu</span>
+    <input type="search" class="search-input" placeholder="Unesite vrijednost" />
+    <span class="footer-input">Po ovoj vrijednosti će se pretraživati podaci.</span>
+    
+    <select class="column-selector"  > <!--onchange="filterTable()"-->
+      <option value="" class="first"  disabled selected hidden>Odaberite polje za pretragu</option>
+
+      <option value="wildcard">Sva polja (wildcard)</option>
+      <option value="parkName">park</option>
+      <option value="typeOfPark">tip</option>
+      <option value="yearOfFoundation">godina osnutka</option>
+      <option value="area">površina</option>
+      <option value="peakName">vrh</option>
+      <option value="peakHeight">visina vrha</option>
+      <option value="countyName">županija</option>
+      <option value="atraction">atrakcija</option>
+      <option value="event">događaj</option>
+      <option value="animalName">životinja</option>
+      <option value="speciesOfAnimal">vrsta životinje</option>
+
+    </select>
+
+    <button type="button" onclick="filterTable()">Submit</button>
+  </div>
+
+  <div class="download-buttons-container">
+    <button onclick="downloadAsJSON()">
+      Download visible data in JSON format
+    </button>
+    <button onclick="downloadAsCSV()">
+      Download visible data in CSV format
+    </button>
+  </div>
 
   <table class="table">
     <thead>
@@ -63,47 +94,41 @@
     </thead>
 
     <tbody>
-      <template data-template>
-        <tr>
-          <td class="parkName">
-            <p></p>
-          </td>
-          <td class="typeOfPark">
-            <p></p>
-          </td>
-          <td class="yearOfFoundation">
-            <p></p>
-          </td>
-          <td class="area">
-            <p></p>
-          </td>
-          <td class="peakName">
-            <p></p>
-          </td>
-          <td class="peakHeight">
-            <p></p>
-          </td>
-          <td class="county">
-            <p></p>
-          </td>
-          <td class="atraction">
-            <p></p>
-          </td>
-          <td class="event">
-            <p></p>
-          </td>
-          <td class="animal">
-            <p></p>
-          </td>
-          <td class="animalSpecies">
-            <p></p>
-          </td>
-        </tr>
-      </template>
     </tbody>
   </table>
 
-
+  <!-- <table id="example" class="display" style="width:100%">
+    <thead>
+      <tr>
+        <th>Park</th>
+        <th>Tip</th>
+        <th>Godina osnutka</th>
+        <th>Površina</th>
+        <th>Vrh</th>
+        <th>Visina vrha</th>
+        <th>Županija</th>
+        <th>Atrakcija</th>
+        <th>Događaj</th>
+        <th>Životinja</th>
+        <th>Vrsta životinje</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>Park</th>
+        <th>Tip</th>
+        <th>Godina osnutka</th>
+        <th>Površina</th>
+        <th>Vrh</th>
+        <th>Visina vrha</th>
+        <th>Županija</th>
+        <th>Atrakcija</th>
+        <th>Događaj</th>
+        <th>Životinja</th>
+        <th>Vrsta životinje</th>
+      </tr>
+    </tfoot>
+  </table> -->
 
 
 
