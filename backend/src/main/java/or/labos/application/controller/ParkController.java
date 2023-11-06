@@ -7,27 +7,24 @@ import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping(value = "/park")
 public class ParkController {
 
     @Autowired
     private ParkService parkService;
 
+    @CrossOrigin
     @GetMapping(value= "")
     public ResponseEntity<List<ParkDto>> listParks(){
 
-        List<ParkEntity> parks = parkService.listAll();
+        /*List<ParkEntity> parks = parkService.listAll();
+
 
         List<ParkDto> listParksDto = parks.stream()
                 .map(park -> {
@@ -43,18 +40,64 @@ public class ParkController {
 
         return ResponseEntity
                 .ok()
-                .body(listParksDto);
+                .body(listParksDto);*/
+
+        List<ParkEntity> parks = parkService.listAll();
+
+        List<ParkDto> listParksDto = parks.stream()
+                .map(park -> {
+
+                    List<Map<String, String>> animals = park.getParkAnimals()
+                            .stream()
+                            .map(animal -> {
+                                Map<String, String> animalMap = new TreeMap<>();
+                                animalMap.put("name", animal.getAnimalName());
+                                animalMap.put("species", animal.getSpeciesOfAnimal());
+                                return animalMap;
+                            })
+                            .collect(Collectors.toList());
+
+                    if (!Objects.isNull(park.getPeakOfPark())) {
+                        return new ParkDto(
+                                park.getParkName(),
+                                park.getTypeOfPark().getTypeOfParkName(),
+                                park.getYearOfFoundation(),
+                                park.getArea(),
+                                park.getPeakOfPark().getPeakName(),
+                                park.getPeakOfPark().getPeakHeight(),
+                                park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),
+                                park.getAtraction(),
+                                park.getEvent(),
+                                animals
+                        );
+                    } else {
+                        return new ParkDto(
+                                park.getParkName(),
+                                park.getTypeOfPark().getTypeOfParkName(),
+                                park.getYearOfFoundation(),
+                                park.getArea(),
+                                park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),
+                                park.getAtraction(),
+                                park.getEvent(),
+                                animals
+                        );
+                    }
+                })
+                .toList();
+
+        return ResponseEntity.ok().body(listParksDto);
     }
 
-    @GetMapping(value = "/one")
-    public ResponseEntity<ParkDto> fetch(@RequestBody String parkName){
+    @CrossOrigin
+    @GetMapping(value = "/{parkName}")
+    public ResponseEntity<ParkDto> fetch(@PathVariable(value = "parkName") String parkName){
 
-        ParkEntity park = parkService.fetch(parkName);
+        ParkEntity park = parkService.findByParkName(parkName);
 
         ParkDto parkDto;
 
-        if(!Objects.isNull(park.getPeakOfPark())) parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(),park.getPeakOfPark().getPeakName(), park.getPeakOfPark().getPeakHeight(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
-        else parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
+        if(!Objects.isNull(park.getPeakOfPark())) parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getArea(), park.getPeakOfPark().getPeakName(), park.getPeakOfPark().getPeakHeight(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
+        else parkDto = new ParkDto(park.getParkName(), park.getTypeOfPark().getTypeOfParkName(), park.getYearOfFoundation(), park.getArea(), park.getParkCounties().stream().map(CountyEntity::getCountyName).toList(),park.getAtraction(), park.getEvent(), Collections.singletonList(park.getParkAnimals().stream().collect(Collectors.toMap(AnimalEntity::getAnimalName, AnimalEntity::getSpeciesOfAnimal))));
 
 
         if(parkName != null) return ResponseEntity.ok(parkDto);

@@ -18,6 +18,7 @@ public class ParkDto {
     private String parkName;
     private String typeOfPark;
     private Integer yearOfFoundation;
+    private Double area;
     private String peakName;
     private Integer peakHeight;
     private List<String> counties;
@@ -25,17 +26,15 @@ public class ParkDto {
     private String event;
     private List<Map<String, String>> animals;//name and species
 
-    public ParkDto(String parkName, String typeOfPark, Integer yearOfFoundation, List<String> counties, String atraction, String event, List<Map<String, String>> animals) {
+    public ParkDto(String parkName, String typeOfPark, Integer yearOfFoundation, Double area, List<String> counties, String atraction, String event, List<Map<String, String>> animals) {
         this.parkName = parkName;
         this.typeOfPark = typeOfPark;
         this.yearOfFoundation = yearOfFoundation;
+        this.area = area;
         this.counties = counties;
         this.atraction = atraction;
         this.event = event;
         this.animals = animals;
     }
-
-
-
 
 }

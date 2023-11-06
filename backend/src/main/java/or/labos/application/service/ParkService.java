@@ -21,8 +21,7 @@ public class ParkService {
         return parkRepo.findAll();
     }
 
-
-    public ParkEntity fetch(String parkName){
+    public ParkEntity findByParkName(String parkName){
         return parkRepo.findByParkName(parkName);
     }
 
