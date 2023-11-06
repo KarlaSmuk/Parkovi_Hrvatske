@@ -1,3 +1,12 @@
 body{
     margin: 4em;
 }
+
+table, tr, td, th{
+    border: 1px solid grey;
+}
+
+th h4{
+    width: max-content;
+}
+
