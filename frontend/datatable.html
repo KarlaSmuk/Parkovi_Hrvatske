@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/datatable.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" type="text/css" href="css/datatable.css" />
+
+    <script defer src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script defer src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script defer src="js/app.js"></script>
+
+    <title>Datatable</title>
+</head>
+
+<body onload="fetchAll()">
+
+    <div style="overflow-x: auto">
+        <table class="table">
+          <thead>
+            <tr class="th-row">
+              <th>
+                <h4>Park</h4>
+              </th>
+              <th>
+                <h4>Tip</h4>
+              </th>
+              <th>
+                <h4>Godina osnutka</h4>
+              </th>
+              <th>
+                <h4>Površina</h4>
+              </th>
+              <th>
+                <h4>Vrh</h4>
+              </th>
+              <th>
+                <h4>Visina vrha</h4>
+              </th>
+              <th>
+                <h4>Županija</h4>
+              </th>
+              <th>
+                <h4>Atrakcija</h4>
+              </th>
+              <th>
+                <h4>Događaj</h4>
+              </th>
+              <th>
+                <h4>Životinja</h4>
+              </th>
+              <th>
+                <h4>Vrsta životinje</h4>
+              </th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <template data-template>
+              <tr>
+                <td class="parkName"><p></p></td>
+                <td class="typeOfPark"><p></p></td>
+                <td class="yearOfFoundation"><p></p></td>
+                <td class="area"><p></p></td>
+                <td class="peakName"><p></p></td>
+                <td class="peakHeight"><p></p></td>
+                <td class="county"><p></p></td>
+                <td class="atraction"><p></p></td>
+                <td class="event"><p></p></td>
+                <td class="animal"><p></p></td>
+                <td class="animalSpecies"><p></p></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+
+
+
+
+
+</body>
+
+</html>
