@@ -1,6 +1,5 @@
 package or.labos.application.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,8 +24,6 @@ public class HighestPeakEntity {
     @Column(name = "visina")
     private Integer peakHeight;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "sifvrh")
+    @OneToOne(mappedBy = "peakOfPark")
     private ParkEntity park;
 }

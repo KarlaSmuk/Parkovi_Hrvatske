@@ -36,11 +36,9 @@ public class ParkEntity {
     @Column(name = "nazdoggod")
     private String event;
 
-    @OneToOne(mappedBy = "park")//, cascade = CascadeType.ALL
-    @PrimaryKeyJoinColumn
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "sifvrh", referencedColumnName = "sifvrh")
     private HighestPeakEntity peakOfPark;
-
-    //povezivanje tablica
 
    @ManyToMany
    @JoinTable(
