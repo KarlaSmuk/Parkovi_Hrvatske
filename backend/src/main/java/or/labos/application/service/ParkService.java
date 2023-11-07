@@ -70,7 +70,4 @@ public class ParkService {
         return parkRepo.findByAllAttributesWithoutPeak(value);
     }
 
-    public Collection<? extends ParkEntity> findByAllAttributesWithPeak(String value) {
-        return parkRepo.findByAllAttributesWithPeak(value);
-    }
 }

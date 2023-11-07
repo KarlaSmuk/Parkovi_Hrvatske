@@ -62,7 +62,7 @@ public class ParkController {
     @GetMapping(value = "/search/{attribute}/{value}")
     public ResponseEntity<List<ParkDto>> fetch(@PathVariable(value = "attribute") String attribute, @PathVariable(value = "value") String value){
 
-        List<ParkEntity> parks = null;
+        List<ParkEntity>  parks = null;
 
         switch (attribute) {
             case "parkName":
@@ -100,7 +100,6 @@ public class ParkController {
                 break;
             case "wildcard" :
                 parks = parkService.findByAllAttributesWithoutPeak(value);
-                parks.addAll(parkService.findByAllAttributesWithPeak(value));
                 break;
             default:
                 break;
@@ -108,6 +107,7 @@ public class ParkController {
         
         List<ParkDto> parkDtos = new ArrayList<>();
 
+        assert parks != null;
         parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
             if (!Objects.isNull(park.getPeakOfPark())) {
                 parkDtos.add(new ParkDto(
@@ -141,56 +141,5 @@ public class ParkController {
         return ResponseEntity.ok().body(parkDtos);
 
     }
-
-    /*@CrossOrigin
-    @PostMapping(value = "/{attribute}/{value}")
-    public ResponseEntity<List<ParkDto>> fetch(@PathVariable(value = "attribute") String atribute, @PathVariable(value = "value") String value){
-
-        System.out.println(atribute + " " + value);
-
-        List<ParkEntity> parks =  parkService.findByAtribute(atribute, value);
-
-        List<ParkDto> parkDtos = new ArrayList<>();
-
-        parks.forEach(park -> {
-            park.getParkAnimals().forEach(animalEntity -> {
-                park.getParkCounties().forEach(countyEntity -> {
-                    if (!Objects.isNull(park.getPeakOfPark())) {
-                        parkDtos.add(new ParkDto(
-                                park.getParkName(),
-                                park.getTypeOfPark().getTypeOfParkName(),
-                                park.getYearOfFoundation(),
-                                park.getArea(),
-                                park.getPeakOfPark().getPeakName(),
-                                park.getPeakOfPark().getPeakHeight(),
-                                countyEntity.getCountyName(),
-                                park.getAtraction(),
-                                park.getEvent(),
-                                animalEntity.getAnimalName(),
-                                animalEntity.getSpeciesOfAnimal()
-                        ));
-                    } else {
-                        parkDtos.add(new ParkDto(
-                                park.getParkName(),
-                                park.getTypeOfPark().getTypeOfParkName(),
-                                park.getYearOfFoundation(),
-                                park.getArea(),
-                                countyEntity.getCountyName(),
-                                park.getAtraction(),
-                                park.getEvent(),
-                                animalEntity.getAnimalName(),
-                                animalEntity.getSpeciesOfAnimal()
-                        ));
-                    }
-                });
-            });
-        });
-
-        return ResponseEntity.ok().body(parkDtos);
-
-    }*/
-
-
-
 
 }

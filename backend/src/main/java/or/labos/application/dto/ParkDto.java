@@ -21,11 +21,9 @@ public class ParkDto {
     private Double area;
     private String peakName;
     private Integer peakHeight;
-    //private List<String> counties;
     private String county;
     private String atraction;
     private String event;
-    //private List<Map<String, String>> animals;//name and species
     private String animal;
     private String species;
 
