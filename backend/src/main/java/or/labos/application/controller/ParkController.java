@@ -75,7 +75,7 @@ public class ParkController {
                 parks =  parkService.findByYearOfFoundation(value);
                 break;
             case "area":
-                parks =  parkService.findByAreaEquals(Double.valueOf(value));
+                parks =  parkService.findByAreaEquals(value);
                 break;
             case "peakName":
                 parks =  parkService.findByPeakOfParkPeakNameIgnoreCase(value);

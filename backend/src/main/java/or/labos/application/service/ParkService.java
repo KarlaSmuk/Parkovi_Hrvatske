@@ -34,8 +34,8 @@ public class ParkService {
         return parkRepo.findByTypeOfParkTypeOfParkNameIgnoreCase(value);
     }
 
-    public List<ParkEntity> findByAreaEquals(Double value) {
-        return parkRepo.findByAreaEquals(value);
+    public List<ParkEntity> findByAreaEquals(String value) {
+        return parkRepo.findByAreaEquals(Double.valueOf(value));
     }
 
     public List<ParkEntity> findByPeakOfParkPeakNameIgnoreCase(String value) {
