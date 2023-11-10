@@ -1,73 +1,37 @@
 package or.labos.application.service;
 
-
-
 import or.labos.application.entity.ParkEntity;
-import or.labos.application.repository.ParkRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
-
 @Service
-public class ParkService {
+public interface ParkService {
 
-    @Autowired
-    private ParkRepository parkRepo;
+    List<ParkEntity> listAll();
 
-    public List<ParkEntity> listAll(){
-        return parkRepo.findAll();
-    }
+    List<ParkEntity> findByParkNameIgnoreCase(String parkName);
 
-    public List<ParkEntity> findByParkNameIgnoreCase(String parkName){
-        return parkRepo.findByParkNameIgnoreCase(parkName);
-    }
+    List<ParkEntity> findByYearOfFoundation(String value);
 
-    public List<ParkEntity> findByYearOfFoundation(String value) {
-        return parkRepo.findByYearOfFoundation(Integer.valueOf(value));
-    }
+    List<ParkEntity> findByTypeOfParkTypeOfParkNameIgnoreCase(String value);
 
-    public List<ParkEntity> findByTypeOfParkTypeOfParkNameIgnoreCase(String value) {
-        return parkRepo.findByTypeOfParkTypeOfParkNameIgnoreCase(value);
-    }
+    List<ParkEntity> findByAreaEquals(String value);
 
-    public List<ParkEntity> findByAreaEquals(String value) {
-        return parkRepo.findByAreaEquals(Double.valueOf(value));
-    }
+    List<ParkEntity> findByPeakOfParkPeakNameIgnoreCase(String value);
 
-    public List<ParkEntity> findByPeakOfParkPeakNameIgnoreCase(String value) {
-        return parkRepo.findByPeakOfParkPeakNameIgnoreCase(value);
-    }
+    List<ParkEntity> findByPeakOfParkPeakHeight(String value);
 
-    public List<ParkEntity> findByPeakOfParkPeakHeight(String value) {
-        return parkRepo.findByPeakOfParkPeakHeight(Integer.valueOf(value));
-    }
+    List<ParkEntity> findByAtractionIgnoreCase(String value);
 
-    public List<ParkEntity> findByAtractionIgnoreCase(String value) {
-        return parkRepo.findByAtractionIgnoreCase(value);
-    }
+    List<ParkEntity> findByEventIgnoreCase(String value);
 
-    public List<ParkEntity> findByEventIgnoreCase(String value) {
-        return parkRepo.findByEventIgnoreCase(value);
-    }
+    List<ParkEntity> findAllByCountyIgnoreCase(String value);
 
-    public List<ParkEntity> findAllByCountyIgnoreCase(String value) {
-        return parkRepo.findAllByCountyIgnoreCase(value);
-    }
+    List<ParkEntity> findByParkAnimalsNameIgnoreCase(String value);
 
-    public List<ParkEntity> findByParkAnimalsNameIgnoreCase(String value) {
-        return parkRepo.findByParkAnimalsNameIgnoreCase(value);
-    }
+    List<ParkEntity> findByParkAnimalsSpeciesIgnoreCase(String value);
 
-    public List<ParkEntity> findByParkAnimalsSpeciesIgnoreCase(String value) {
-        return parkRepo.findByParkAnimalsSpeciesIgnoreCase(value);
-    }
-
-    public List<ParkEntity> findByAllAttributesWithoutPeak(String value) {
-        return parkRepo.findByAllAttributesWithoutPeak(value);
-    }
+    List<ParkEntity> findByAllAttributesWithoutPeak(String value);
 
 }

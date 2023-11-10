@@ -23,29 +23,29 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
     List<ParkEntity> findByPeakOfParkPeakHeight(Integer value);
 
 
-    @Query("SELECT DISTINCT p FROM ParkEntity p JOIN FETCH p.parkCounties c WHERE UPPER(c.countyName) = UPPER(:value)")
+    @Query("SELECT DISTINCT p FROM ParkEntity p JOIN p.parkCounties c WHERE UPPER(c.countyName) = UPPER(:value)")
     List<ParkEntity> findAllByCountyIgnoreCase(@Param("value") String value);
 
     List<ParkEntity> findByAtractionIgnoreCase(String value);
 
     List<ParkEntity> findByEventIgnoreCase(String value);
 
-    @Query("SELECT p FROM ParkEntity p JOIN FETCH p.parkAnimals u WHERE UPPER(u.animalName) = upper(:value)")
+    @Query("SELECT p FROM ParkEntity p JOIN p.parkAnimals u WHERE UPPER(u.animalName) = upper(:value)")
     List<ParkEntity> findByParkAnimalsNameIgnoreCase(@Param("value")  String value);
 
-    @Query("SELECT p FROM ParkEntity p JOIN FETCH p.parkAnimals u WHERE UPPER(u.speciesOfAnimal) = upper(:value)")
+    @Query("SELECT p FROM ParkEntity p JOIN p.parkAnimals u WHERE UPPER(u.speciesOfAnimal) = upper(:value)")
     List<ParkEntity> findByParkAnimalsSpeciesIgnoreCase(@Param("value")  String value);
 
     @Query("SELECT DISTINCT p FROM ParkEntity p " +
-            "JOIN FETCH p.parkAnimals pa " +
-            "JOIN FETCH p.parkCounties pc " +
+            "JOIN p.parkAnimals pa " +
+            "JOIN p.parkCounties pc " +
             "LEFT JOIN p.peakOfPark pp " +
             "WHERE UPPER(p.parkName) = upper(:value) " +
             "OR UPPER(p.typeOfPark.typeOfParkName) = upper(:value) " +
             "OR CAST(p.yearOfFoundation as string ) = :value " +
             "OR CAST(p.area as string ) = :value " +
-            "OR  UPPER(pp.peakName) = upper(:value) " +
-            "OR  CAST(pp.peakHeight as string) = :value " +
+            "OR UPPER(pp.peakName) = upper(:value) " +
+            "OR CAST(pp.peakHeight as string) = :value " +
             "OR UPPER(pc.countyName) = upper(:value) " +
             "OR UPPER(p.atraction) = upper(:value) " +
             "OR UPPER(p.event) = upper(:value) " +
