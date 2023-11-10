@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +23,16 @@ public class DownloadController {
     @Autowired
     private JsonExporterService jsonExporterService;
 
-    private List<ParkToFileDto> parks; // Store data temporarily
+    private List<ParkToFileDto> parksToJSON; // Store data temporarily
+    private List<Map<String, Object>> parksToCSV; // Store data temporarily
 
     @CrossOrigin
     @PostMapping("/search/sendData")
     public ResponseEntity<List<ParkToFileDto>> json(@RequestBody List<Map<String, Object>> requestData) {
 
         List<ParkToFileDto> parkToFileDtos = new ArrayList<>();
+
+        parksToCSV = new ArrayList<>(requestData);
 
         requestData.forEach(park -> {
             ParkToFileDto existingPark = parkToFileDtos.stream()
@@ -76,7 +80,7 @@ public class DownloadController {
 
         });
 
-        parks = new ArrayList<>(parkToFileDtos);
+        parksToJSON = new ArrayList<>(parkToFileDtos);
 
 
         return ResponseEntity.ok(parkToFileDtos);
@@ -86,7 +90,7 @@ public class DownloadController {
     @GetMapping("/search/downloadJson")
     public ResponseEntity<Resource> downloadJsonFile() {
 
-        String parkJsonString = jsonExporterService.export(parks);
+        String parkJsonString = jsonExporterService.export(parksToJSON);
 
         byte[] parkJsonBytes = parkJsonString.getBytes(StandardCharsets.UTF_8);
         ByteArrayResource resource = new ByteArrayResource(parkJsonBytes);
@@ -97,5 +101,38 @@ public class DownloadController {
                 .contentLength(parkJsonBytes.length)
                 .body(resource);
     }
+
+    @CrossOrigin
+    @GetMapping("/search/downloadCSV")
+    public ResponseEntity<byte[]> generateCsvFile() {
+
+        String CSV_HEADER = "park,tip,godina_osnutka,povrsina,vrh,visina_vrh,zupanija,atrakcija,dogadjaj_godine,zivotinja,vrsta_zivotinja\n";
+
+        StringBuilder csvContent = new StringBuilder();
+        csvContent.append(CSV_HEADER);
+
+        parksToCSV.forEach(park -> {
+            csvContent.append(park.get("parkName")).append(",")
+                    .append(park.get("typeOfPark")).append(",")
+                    .append(park.get("yearOfFoundation")).append(",")
+                    .append(park.get("area")).append(",")
+                    .append(park.get("peakName")).append(",")
+                    .append(park.get("peakHeight")).append(",")
+                    .append(park.get("county")).append(",")
+                    .append(park.get("atraction")).append(",")
+                    .append(park.get("event")).append(",")
+                    .append(park.get("animal")).append(",")
+                    .append(park.get("species")).append("\n");
+        });
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "parks.csv");
+
+        byte[] csvBytes = csvContent.toString().getBytes(StandardCharsets.UTF_8);
+
+        return new ResponseEntity<>(csvBytes, headers, HttpStatus.OK);
+    }
+
 }
 

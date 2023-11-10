@@ -93,7 +93,7 @@ function clearTable() {
 
 function sendData(data) {
 
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data));
 
     fetch('http://localhost:8080/search/sendData', {
         method: "POST",
@@ -132,4 +132,18 @@ function downloadAsJSON() {
 }
 
 function downloadAsCSV() {
+
+    fetch('http://localhost:8080/search/downloadCSV')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'parks.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error:', error));
 }
