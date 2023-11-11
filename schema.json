@@ -1,0 +1,112 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://example.com/schema.json",
+    "title": "Parkovi Hrvatske",
+    "description": "Otvoreni skup Parkova Hrvatske",
+    "type": "array",
+    "items": {
+        "title": "Park",
+        "description": "Objekt koji sadrži atribute parka.",
+        "type": "object",
+        "required": [
+            "park",
+            "tip",
+            "godina_osnutka",
+            "povrsina",
+            "vrh",
+            "zupanija",
+            "atrakcija",
+            "dogadjaj_godine",
+            "zivotinje"
+        ],
+        "properties": {
+            "park": {
+                "description": "Naziv parka.",
+                "type": "string"
+            },
+            "tip": {
+                "description": "Tip parka (Park prirode ili Nacionalni park).",
+                "type": "string"
+            },
+            "godina_osnutka": {
+                "description": "Godina osnutka parka.",
+                "type": "integer"
+            },
+            "povrsina": {
+                "description": "Površina parka u km²",
+                "type": [
+                    "number",
+                    "integer"
+                ]
+            },
+            "vrh": {
+                "title" : "Najviši vrh.",
+                "description": "Objekt koji sadrži atribute najvišeg vrha parka.",
+                "type": "object",
+                "required": [
+                    "naziv",
+                    "visina"
+                ],
+                "properties": {
+                    "naziv": {
+                        "description": "Naziv najvišeg vrha parka.",
+                        "type": [
+                            "null",
+                            "string"
+                        ]
+                    },
+                    "visina": {
+                        "title": "The visina Schema",
+                        "description": "Visina najvišeg vrha u metrima ( m ).",
+                        "type": [
+                            "null",
+                            "integer"
+                        ]
+                    }
+                }
+            },
+            "zupanija": {
+                "title" : "Županije/a",
+                "description": "Naziv županije ili županija u kojoj se park nalazi.",
+                "type": "array",
+                "items": {
+                    "title": "Županija",
+                    "description": "Županija koja se nalazi u parku.",
+                    "type": "string"
+                }
+            },
+            "atrakcija": {
+                "description": "Najpoznatija atrakcija",
+                "type": "string"
+            },
+            "dogadjaj_godine": {
+                "description": "Najpoznatiji događaj u godini.",
+                "type": "string"
+            },
+            "zivotinje": {
+                "title" : "Životinje",
+                "description": "Neke od životinja koje se može vidjeti u parku.",
+                "type": "array",
+                "items": {
+                    "title": "Žvotinja",
+                    "description": "Objekt koji sadrži ime i vrstu životinje.",
+                    "type": "object",
+                    "required": [
+                        "naziv",
+                        "vrsta"
+                    ],
+                    "properties": {
+                        "naziv": {
+                            "description": "Naziv životinje.",
+                            "type": "string"
+                        },
+                        "vrsta": {
+                            "description": "Vrsta životinje.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
