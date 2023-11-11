@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -62,7 +63,7 @@ public class DownloadController {
             }
 
             if (existingPark != null) {
-                existingPark.getZupanije().addAll(counties);
+                existingPark.getZupanija().addAll(counties);
                 existingPark.getZivotinje().addAll(animals);
             } else {
                 parkToFileDtos.add(new ParkToFileDto(
@@ -88,7 +89,7 @@ public class DownloadController {
 
     @CrossOrigin
     @GetMapping("/search/downloadJson")
-    public ResponseEntity<Resource> downloadJsonFile() {
+    public ResponseEntity<Resource> downloadJsonFile() throws IOException {
 
         String parkJsonString = jsonExporterService.export(parksToJSON);
 

@@ -20,7 +20,7 @@ public class ParkToFileDto {
     private Integer godina_osnutka;
     private Double povrsina;
     private Map<String, Object> vrh;
-    private Set<String> zupanije;
+    private Set<String> zupanija;
     private String atrakcija;
     private String dogadjaj_godine;
     private Set<Map<String, String>> zivotinje;
