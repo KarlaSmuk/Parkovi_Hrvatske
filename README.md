@@ -20,7 +20,7 @@ Repozitorij napravljen u svrhu laboratorijskih vježbi kolegija Otvoreno računa
 
 ### Verzija skupa podataka
 
-> 1.0
+> 2.0
 
 ### Jezik podataka
 
@@ -32,7 +32,7 @@ Repozitorij napravljen u svrhu laboratorijskih vježbi kolegija Otvoreno računa
 
 ### Datum objave
 
-> 31.10.2023.
+> 14.11.2023.
 
 ### Tema
 
