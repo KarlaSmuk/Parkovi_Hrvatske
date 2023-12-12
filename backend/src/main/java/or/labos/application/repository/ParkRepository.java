@@ -53,4 +53,6 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
             "OR UPPER(pa.speciesOfAnimal) = UPPER(:value) " )
     List<ParkEntity> findByAllAttributesWithoutPeak(String value);
 
+    Boolean existsByParkName(String parkName);
+
 }

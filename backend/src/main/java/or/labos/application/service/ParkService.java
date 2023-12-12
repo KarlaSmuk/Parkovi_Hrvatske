@@ -1,11 +1,15 @@
 package or.labos.application.service;
 
+import or.labos.application.dto.requests.CreateParkRequest;
+import or.labos.application.entity.AnimalEntity;
+import or.labos.application.entity.CountyEntity;
 import or.labos.application.entity.ParkEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
-@Service
+
 public interface ParkService {
 
     List<ParkEntity> listAll();
@@ -34,4 +38,15 @@ public interface ParkService {
 
     List<ParkEntity> findByAllAttributesWithoutPeak(String value);
 
+    //rest
+
+    ParkEntity getParkByID(Integer parkId);
+
+    Set<AnimalEntity> getAnimalsByParkId(Integer parkId);
+
+    Set<CountyEntity> getCountiesByParkId(Integer parkId);
+
+    Boolean parkExists(String parkName);
+
+    ParkEntity createPark(CreateParkRequest createParkRequest);
 }

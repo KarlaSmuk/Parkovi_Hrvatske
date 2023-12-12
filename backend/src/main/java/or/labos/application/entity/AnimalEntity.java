@@ -1,11 +1,11 @@
 package or.labos.application.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.hateoas.RepresentationModel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,9 +14,14 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnimalEntity {
+public class AnimalEntity  {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "animal_generator")
+    @SequenceGenerator
+            (name="animal_generator", sequenceName = "animal_seq",
+                    initialValue = 17,
+                    allocationSize=1)
     @Column(name = "sifzivotinja")
     private Integer animalID;
 
@@ -27,5 +32,5 @@ public class AnimalEntity {
     private String speciesOfAnimal;
 
     @ManyToMany(mappedBy = "parkAnimals")
-    Set<ParkEntity> hasAnimal;
+    Set<ParkEntity> hasAnimal = new HashSet<>();
 }

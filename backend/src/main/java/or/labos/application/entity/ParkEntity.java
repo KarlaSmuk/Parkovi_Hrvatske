@@ -1,13 +1,10 @@
 package or.labos.application.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 @Entity
 @Table(name = "parkovi")
@@ -15,9 +12,14 @@ import java.util.logging.Logger;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParkEntity {
+public class ParkEntity extends RepresentationModel<ParkEntity> {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "park_generator")
+    @SequenceGenerator
+            (name="park_generator", sequenceName = "park_seq",
+                    initialValue = 11,
+                    allocationSize=1)
     @Column(name = "sifpark")
     private Integer parkID;
 
