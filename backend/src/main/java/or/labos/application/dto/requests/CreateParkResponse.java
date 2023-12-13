@@ -14,13 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateParkResponse {
 
+    private Integer parkId;
     private String parkName;
     private String typeOfParkName;
     private Integer yearOfFoundation;
     private Double area;
-    private HighestPeakDto peak;
-    private List<CountyDto> counties;
+    private HighestPeakResponse peak;
+    private List<CountyResponse> counties;
     private String atraction;
     private String event;
-    private List<AnimalRequestResponse> animals;
+    private List<AnimalResponse> animals;
 }

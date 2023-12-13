@@ -48,5 +48,9 @@ public interface ParkService {
 
     Boolean parkExists(String parkName);
 
+    Boolean existsByID(Integer parkID);
+
     ParkEntity createPark(CreateParkRequest createParkRequest);
+
+    void deleteById(Integer parkID);
 }

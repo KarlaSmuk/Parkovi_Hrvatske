@@ -15,12 +15,7 @@ import java.util.Set;
 public class ParkEntity extends RepresentationModel<ParkEntity> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "park_generator")
-    @SequenceGenerator
-            (name="park_generator", sequenceName = "park_seq",
-                    initialValue = 11,
-                    allocationSize=1)
-    @Column(name = "sifpark")
+    @Column( name = "sifpark")
     private Integer parkID;
 
     @Column(name = "nazpark")

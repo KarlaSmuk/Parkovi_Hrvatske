@@ -134,4 +134,16 @@ public class ParkRestController {
         return new ResponseEntity<>(parkResponseDto, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{parkID}")
+    public ResponseEntity<ResponseDto> deletePark(@PathVariable Integer parkID){
+
+        if(!parkService.existsByID(parkID)){
+            return ResponseEntity.notFound().build();
+        }
+
+        parkService.deleteById(parkID);
+
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, "Park deleted.", null));
+    }
+
 }

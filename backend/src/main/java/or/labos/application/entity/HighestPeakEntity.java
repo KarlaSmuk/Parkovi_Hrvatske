@@ -12,11 +12,6 @@ import lombok.*;
 public class HighestPeakEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "peak_generator")
-    @SequenceGenerator
-            (name="peak_generator", sequenceName = "peak_seq",
-                    initialValue = 6,
-                    allocationSize=1)
     @Column(name = "sifvrh")
     private Integer peakID;
 

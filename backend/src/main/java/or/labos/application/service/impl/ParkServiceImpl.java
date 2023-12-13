@@ -1,6 +1,7 @@
 package or.labos.application.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import or.labos.application.dto.AnimalDto;
 import or.labos.application.dto.CountyDto;
@@ -126,11 +127,17 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
+    public Boolean existsByID(Integer parkID) {
+        return parkRepo.existsByParkID(parkID);
+    }
+
+    @Override
     @Transactional
     public ParkEntity createPark(CreateParkRequest createParkRequest) {
 
         ParkEntity parkEntity = new ParkEntity();
 
+        parkEntity.setParkID(parkRepo.getMaxId() + 1);
         parkEntity.setParkName(createParkRequest.getParkName());
         parkEntity.setYearOfFoundation(createParkRequest.getYearOfFoundation());
         parkEntity.setArea(createParkRequest.getArea());
@@ -148,6 +155,7 @@ public class ParkServiceImpl implements ParkService {
                     .orElseGet(() -> {
                         // Create a new AnimalEntity with appropriate ID generation
                         AnimalEntity newAnimal = new AnimalEntity();
+                        newAnimal.setAnimalID(animalRepository.getMaxId() + 1);
                         newAnimal.setAnimalName(animalDto.getAnimalName());
                         newAnimal.setSpeciesOfAnimal(animalDto.getSpeciesOfAnimal());
                         return animalRepository.save(newAnimal); // Save to generate ID
@@ -170,6 +178,7 @@ public class ParkServiceImpl implements ParkService {
         HighestPeakEntity peak = highestPeakRepository.findByPeakName(createParkRequest.getPeak().getPeakName())
                 .orElseGet(() -> {
                     HighestPeakEntity newPeak = new HighestPeakEntity();
+                    newPeak.setPeakID(highestPeakRepository.getMaxId() + 1);
                     newPeak.setPeakName(createParkRequest.getPeak().getPeakName());
                     newPeak.setPeakHeight(createParkRequest.getPeak().getPeakHeight());
                     return highestPeakRepository.save(newPeak);
@@ -177,5 +186,11 @@ public class ParkServiceImpl implements ParkService {
         parkEntity.setPeakOfPark(peak);
 
         return parkRepo.save(parkEntity);
+    }
+
+    public void deleteById(Integer parkID){
+        ParkEntity parkEntity = parkRepo.findByParkID(parkID);
+
+        parkRepo.delete(parkEntity);
     }
 }

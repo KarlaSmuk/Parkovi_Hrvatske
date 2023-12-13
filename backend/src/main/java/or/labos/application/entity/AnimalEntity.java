@@ -17,11 +17,6 @@ import java.util.Set;
 public class AnimalEntity  {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "animal_generator")
-    @SequenceGenerator
-            (name="animal_generator", sequenceName = "animal_seq",
-                    initialValue = 17,
-                    allocationSize=1)
     @Column(name = "sifzivotinja")
     private Integer animalID;
 

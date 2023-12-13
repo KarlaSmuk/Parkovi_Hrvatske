@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnimalRequestResponse {
+public class HighestPeakResponse {
 
-    private String animalName;
-    private String speciesOfAnimal;
+    private Integer peakID;
+    private String peakName;
+    private Integer peakHeight;
 }

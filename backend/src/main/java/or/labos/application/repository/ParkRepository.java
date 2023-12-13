@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
@@ -22,6 +23,7 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
 
     List<ParkEntity> findByPeakOfParkPeakHeight(Integer value);
 
+    ParkEntity findByParkID(Integer parkID);
 
     @Query("SELECT DISTINCT p FROM ParkEntity p JOIN p.parkCounties c WHERE UPPER(c.countyName) = UPPER(:value)")
     List<ParkEntity> findAllByCountyIgnoreCase(@Param("value") String value);
@@ -55,4 +57,8 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
 
     Boolean existsByParkName(String parkName);
 
+    Boolean existsByParkID(Integer parkID);
+
+    @Query("SELECT MAX(p.parkID) FROM ParkEntity p")
+    Integer getMaxId();
 }
