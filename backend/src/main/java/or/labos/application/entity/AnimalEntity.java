@@ -3,6 +3,7 @@ package or.labos.application.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 public class AnimalEntity  {
 
     @Id
+    @UuidGenerator
     @Column(name = "sifzivotinja")
     private Integer animalID;
 

@@ -8,7 +8,6 @@ import org.springframework.hateoas.RepresentationModel;
 @NoArgsConstructor
 public class AnimalDto extends RepresentationModel<AnimalDto> {
 
-    //private Integer animalID;
     private String animalName;
     private String speciesOfAnimal;
 

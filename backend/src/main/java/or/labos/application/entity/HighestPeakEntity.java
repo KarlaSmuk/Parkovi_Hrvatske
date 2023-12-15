@@ -2,6 +2,7 @@ package or.labos.application.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "najvisi_vrhovi")

@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 public class CountyDto {
 
-    //private Integer countyID;
     private String countyName;
 
 }

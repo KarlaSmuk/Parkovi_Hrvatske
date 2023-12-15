@@ -2,6 +2,7 @@ package or.labos.application.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 public class ParkEntity extends RepresentationModel<ParkEntity> {
 
     @Id
+    @UuidGenerator
     @Column( name = "sifpark")
     private Integer parkID;
 

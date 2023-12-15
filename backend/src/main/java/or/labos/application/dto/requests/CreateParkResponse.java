@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import or.labos.application.dto.CountyDto;
 import or.labos.application.dto.HighestPeakDto;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateParkResponse {
+public class CreateParkResponse extends RepresentationModel<CreateParkResponse> {
 
     private Integer parkId;
     private String parkName;

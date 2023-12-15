@@ -24,5 +24,5 @@ public class ParkResponseDto extends RepresentationModel<ParkResponseDto>{
     private HighestPeakDto peak;
     private String atraction;
     private String event;
-    //private List<Link> links;//animals i counties
+
 }

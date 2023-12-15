@@ -4,7 +4,6 @@ import or.labos.application.dto.requests.CreateParkRequest;
 import or.labos.application.entity.AnimalEntity;
 import or.labos.application.entity.CountyEntity;
 import or.labos.application.entity.ParkEntity;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
@@ -53,4 +52,6 @@ public interface ParkService {
     ParkEntity createPark(CreateParkRequest createParkRequest);
 
     void deleteById(Integer parkID);
+
+    ParkEntity updatePark(Integer parkID, CreateParkRequest createParkRequest);
 }

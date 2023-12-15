@@ -2,7 +2,6 @@ package or.labos.application.controller;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import or.labos.application.dto.*;
 import or.labos.application.dto.requests.CreateParkRequest;
 import or.labos.application.dto.requests.CreateParkResponse;
@@ -64,7 +63,7 @@ public class ParkRestController {
 
         Optional<ParkEntity> parkOptional = Optional.ofNullable(parkService.getParkByID(parkId));
 
-        if (!parkOptional.isPresent()) {
+        if (parkOptional.isEmpty()) {
             throw new EntityNotFoundException("Park not found with ID: " + parkId);
         }
 
@@ -97,10 +96,10 @@ public class ParkRestController {
             animalResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
         });
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>();
-        responseDtos.setStatus(HttpStatus.OK);
+        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
+        /*responseDtos.setStatus(HttpStatus.OK);
         responseDtos.setMessage("Fetched animals for park with ID " + parkId);
-        responseDtos.setResponse(animalDtos);
+        responseDtos.setResponse(animalDtos);*/
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -113,16 +112,16 @@ public class ParkRestController {
                 .map(county -> modelMapper.map(county, CountyDto.class))
                 .collect(Collectors.toList());
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>();
-        responseDtos.setStatus(HttpStatus.OK);
+        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
+        /*responseDtos.setStatus(HttpStatus.OK);
         responseDtos.setMessage("Fetched counties for park with ID " + parkId);
-        responseDtos.setResponse(countyDtos);
+        responseDtos.setResponse(countyDtos);*/
 
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping
-    public ResponseEntity<CreateParkResponse> addNewPark(@Valid @RequestBody CreateParkRequest createParkRequest) {
+    public ResponseEntity<?> addNewPark(@Valid @RequestBody CreateParkRequest createParkRequest) {
 
         if(parkService.parkExists(createParkRequest.getParkName())){
             throw new EntityExistsException("Park " + createParkRequest.getParkName() + " already exists");
@@ -130,12 +129,41 @@ public class ParkRestController {
 
         ParkEntity newPark = parkService.createPark(createParkRequest);
         CreateParkResponse parkResponseDto = modelMapper.map(newPark, CreateParkResponse.class);
-        // Add HATEOAS links...
-        return new ResponseEntity<>(parkResponseDto, HttpStatus.CREATED);
+
+        parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
+
+
+        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "New park created", parkResponseDto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{parkID}")
+    public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest){
+
+        ParkEntity newPark;
+
+        if(!parkService.existsByID(parkID)){
+            newPark = parkService.createPark(createParkRequest);
+        }else{
+            newPark = parkService.updatePark(parkID, createParkRequest);
+
+        }
+
+        System.out.println(newPark);
+
+        CreateParkResponse parkResponseDto = modelMapper.map(newPark, CreateParkResponse.class);
+
+        parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
+
+
+        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "Park updated", parkResponseDto);
+
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{parkID}")
-    public ResponseEntity<ResponseDto> deletePark(@PathVariable Integer parkID){
+    public ResponseEntity<?> deletePark(@PathVariable Integer parkID){
 
         if(!parkService.existsByID(parkID)){
             return ResponseEntity.notFound().build();
