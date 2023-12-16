@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.1.0
 info:
   title: Parkovi hrvatske
   description: API za parkove hrvatske
@@ -82,7 +82,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: '#/components/schemas/CreateParkRequest'
         required: true
       responses:
         '200':
@@ -114,7 +114,7 @@ paths:
                 $ref: '#/components/schemas/Response'
         '404':
           description: Park doesnt exist
-  api/parks/{parkId}/animals:
+  /api/parks/{parkId}/animals:
     get:
       summary: Find animals of park
       description: Returns animals of park
@@ -136,7 +136,7 @@ paths:
                   $ref: '#/components/schemas/Response'          
         '404':
           description: Park not found
-  api/parks/{parkId}/counties:
+  /api/parks/{parkId}/counties:
     get:
       summary: Find counties of park
       description: Returns counties of park
@@ -158,7 +158,7 @@ paths:
                 $ref: '#/components/schemas/Response'          
         '404':
           description: Park not found
-  api/parks/{parkId}/peak:
+  /api/parks/{parkId}/peak:
     get:
       summary: Find peak of park
       description: Returns peak of park
@@ -182,6 +182,14 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Peak not found
+  /api:
+    get:
+      summary: API
+      description: Returns openapi specification
+      operationId: getAPI
+      responses:
+        '200':
+          description: Successful response
 components:
   schemas:
     Response:
@@ -194,7 +202,7 @@ components:
         response:
           type: object
           items:
-            $ref: '#/components/schemas/...'
+            $ref: '#/components/schemas/ParkResponse'
     CreateParkRequest:
       type: object
       properties:
@@ -205,13 +213,15 @@ components:
         yearOfFoundation:
           type: integer
         area:
-          type: double
+          type: number
+          format: double
         peak:
           type: object
           items:
             $ref: '#/components/schemas/HighestPeakDto'
         counties:
-          type: list
+          type: array
+          format: list
           items:
             $ref: '#/components/schemas/CountyDto'
         atraction:
@@ -219,7 +229,8 @@ components:
         event:
           type: string
         animals:
-          type: list
+          type: array
+          format: list
           items:
             $ref: '#/components/schemas/AnimalDto'
     ParkResponse:
@@ -234,13 +245,15 @@ components:
         yearOfFoundation:
           type: integer
         area:
-          type: double
+          type: number
+          format: double
         peak:
           type: object
           items:
             $ref: '#/components/schemas/HighestPeakResponse'
         counties:
-          type: list
+          type: array
+          format: list
           items:
             $ref: '#/components/schemas/CountyResponse'
         atraction:
@@ -248,7 +261,8 @@ components:
         event:
           type: string
         animals:
-          type: list
+          type: array
+          format: list
           items:
             $ref: '#/components/schemas/AnimalResponse'
     HighestPeakResponse:
