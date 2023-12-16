@@ -50,11 +50,9 @@ public interface ParkService {
 
     Boolean existsByID(Integer parkID);
 
-    ParkEntity createPark(CreateParkRequest createParkRequest);
+    ParkEntity createPark(ParkEntity park, CreateParkRequest createParkRequest);
 
     void deleteById(Integer parkID);
-
-    ParkEntity updatePark(Integer parkID, CreateParkRequest createParkRequest);
 
     HighestPeakEntity getPeakByID(Integer parkID);
 }

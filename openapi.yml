@@ -16,17 +16,11 @@ paths:
       operationId: listAllParks
       responses:
         '200':
-          description: Successful operation
+          description: Fetched all parks
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-        '405':
-          description: Validation exception
     post:
       summary: Add a new park
       description: Add a new park
@@ -40,11 +34,13 @@ paths:
         required: true
       responses:
         '200':
-          description: Successful operation
+          description: New park created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'          
+                $ref: '#/components/schemas/Response'    
+        '409':
+          description: Park already exists  
         '405':
           description: Invalid input
   /api/parks/{parkId}:
@@ -62,15 +58,13 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Fetched park with parkId
           content:
             application/json:
               schema:
-                type: array
-                items:
                   $ref: '#/components/schemas/Response'          
-        '400':
-          description: Invalid status value
+        '404':
+          description: Park not found
     put:
       summary: Update an existing park
       description: Update an existing park by Id
@@ -92,17 +86,13 @@ paths:
         required: true
       responses:
         '200':
-          description: Successful operation
+          description: Park updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
-        '400':
-          description: Invalid ID supplied
         '404':
-          description: Pet not found
-        '405':
-          description: Validation exception
+          description: Park not found
     delete:
       summary: Delete a park
       description: Delete a park
@@ -116,8 +106,14 @@ paths:
             type: integer
             format: int64
       responses:
-        '400':
-          description: Invalid pet value
+        '200':
+          description: Park deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '404':
+          description: Park doesnt exist
   api/parks/{parkId}/animals:
     get:
       summary: Find animals of park
@@ -133,15 +129,13 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Fetched animals for park with parkId
           content:
             application/json:
               schema:
-                type: array
-                items:
                   $ref: '#/components/schemas/Response'          
-        '400':
-          description: Invalid tag value
+        '404':
+          description: Park not found
   api/parks/{parkId}/counties:
     get:
       summary: Find counties of park
@@ -157,15 +151,13 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Fetched counties for park with parkId
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'          
-        '400':
-          description: Invalid ID supplied
+                $ref: '#/components/schemas/Response'          
         '404':
-          description: Pet not found
+          description: Park not found
   api/parks/{parkId}/peak:
     get:
       summary: Find peak of park
@@ -181,7 +173,7 @@ paths:
             format: int64
       responses:
         '200':
-          description: successful operation
+          description: Fetched peak for park with parkId
           content:
             application/json:
               schema:
@@ -189,179 +181,124 @@ paths:
         '400':
           description: Invalid ID supplied
         '404':
-          description: Pet not found
+          description: Peak not found
 components:
   schemas:
     Response:
       type: object
       properties:
         status:
-          type: integer
-          format: int64
-          example: 10
+          type: string
         message:
-          type: integer
-          format: int64
-          example: 198772
+          type: string
         response:
-          type: integer
-          format: int32
-          example: 7
-    Customer:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 100000
-        username:
-          type: string
-          example: fehguy
-        address:
-          type: array
-          xml:
-            name: addresses
-            wrapped: true
+          type: object
           items:
-            $ref: '#/components/schemas/Address'
-      xml:
-        name: customer
-    Address:
+            $ref: '#/components/schemas/...'
+    CreateParkRequest:
       type: object
       properties:
-        street:
+        parkName:
           type: string
-          example: 437 Lytton
-        city:
+        typeOfParkName:
           type: string
-          example: Palo Alto
-        state:
-          type: string
-          example: CA
-        zip:
-          type: string
-          example: '94301'
-      xml:
-        name: address
-    Category:
-      type: object
-      properties:
-        id:
+        yearOfFoundation:
           type: integer
-          format: int64
-          example: 1
-        name:
-          type: string
-          example: Dogs
-      xml:
-        name: category
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        username:
-          type: string
-          example: theUser
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: James
-        email:
-          type: string
-          example: john@email.com
-        password:
-          type: string
-          example: '12345'
-        phone:
-          type: string
-          example: '12345'
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
-      xml:
-        name: user
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-      xml:
-        name: tag
-    Pet:
-      required:
-        - name
-        - photoUrls
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        name:
-          type: string
-          example: doggie
-        category:
-          $ref: '#/components/schemas/Category'
-        photoUrls:
-          type: array
-          xml:
-            wrapped: true
+        area:
+          type: double
+        peak:
+          type: object
           items:
-            type: string
-            xml:
-              name: photoUrl
-        tags:
-          type: array
-          xml:
-            wrapped: true
+            $ref: '#/components/schemas/HighestPeakDto'
+        counties:
+          type: list
           items:
-            $ref: '#/components/schemas/Tag'
-        status:
+            $ref: '#/components/schemas/CountyDto'
+        atraction:
           type: string
-          description: pet status in the store
-          enum:
-            - available
-            - pending
-            - sold
-      xml:
-        name: pet
-    ApiResponse:
+        event:
+          type: string
+        animals:
+          type: list
+          items:
+            $ref: '#/components/schemas/AnimalDto'
+    ParkResponse:
       type: object
       properties:
-        code:
+        parkId:
           type: integer
-          format: int32
-        type:
+        parkName:
           type: string
-        message:
+        typeOfParkName:
           type: string
-      xml:
-        name: '##default'
+        yearOfFoundation:
+          type: integer
+        area:
+          type: double
+        peak:
+          type: object
+          items:
+            $ref: '#/components/schemas/HighestPeakResponse'
+        counties:
+          type: list
+          items:
+            $ref: '#/components/schemas/CountyResponse'
+        atraction:
+          type: string
+        event:
+          type: string
+        animals:
+          type: list
+          items:
+            $ref: '#/components/schemas/AnimalResponse'
+    HighestPeakResponse:
+      type: object
+      properties:
+        peakID:
+          type: integer
+        peakName:
+          type: string
+        peakHeight:
+          type: integer
+    AnimalResponse:
+      type: object
+      properties:
+        animalID:
+          type: integer
+        animalName:
+          type: string
+        speciesOfAnimal:
+          type: string
+    CountyResponse:
+      type: object
+      properties:
+        countyID:
+          type: integer
+        countyName:
+          type: string
+    HighestPeakDto:
+      type: object
+      properties:
+        peakName:
+          type: string
+        peakHeight:
+          type: integer
+    AnimalDto:
+      type: object
+      properties:
+        animalName:
+          type: string
+        speciesOfAnimal:
+          type: string
+    CountyDto:
+      type: object
+      properties:
+        countyName:
+          type: string
   requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
+    Park:
+      description: Park object that needs to be created or updated
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Pet'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Pet'
-    UserArray:
-      description: List of user object
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/CreateParkRequest'

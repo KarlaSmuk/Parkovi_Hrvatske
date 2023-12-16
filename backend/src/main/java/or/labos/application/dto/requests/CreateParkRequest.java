@@ -5,6 +5,8 @@ import or.labos.application.dto.AnimalDto;
 import or.labos.application.dto.CountyDto;
 import or.labos.application.dto.HighestPeakDto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data

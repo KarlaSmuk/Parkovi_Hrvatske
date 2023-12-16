@@ -2,8 +2,7 @@ package or.labos.application.controller;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import or.labos.application.dto.*;
-import or.labos.application.dto.requests.CreateParkRequest;
+import or.labos.application.dto.requests.*;
 import or.labos.application.entity.AnimalEntity;
 import or.labos.application.entity.CountyEntity;
 import or.labos.application.entity.HighestPeakEntity;
@@ -13,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -39,8 +39,8 @@ public class ParkRestController {
             return ResponseEntity.noContent().build();
         }
 
-        List<ParkResponseDto> parkResponseDtos = parks.stream()
-                .map(park -> modelMapper.map(park, ParkResponseDto.class))
+        List<ParkResponse> parkResponseDtos = parks.stream()
+                .map(park -> modelMapper.map(park, ParkResponse.class))
                 .collect(Collectors.toList());
 
         parkResponseDtos.forEach(parkResponseDto -> {
@@ -50,7 +50,7 @@ public class ParkRestController {
 
         });
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched all parks", parkResponseDtos);
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched all parks", parkResponseDtos);
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -66,13 +66,13 @@ public class ParkRestController {
 
         ParkEntity park = parkOptional.get();
 
-        ParkResponseDto parkResponseDto = modelMapper.map(park, ParkResponseDto.class);
+        ParkResponse parkResponseDto = modelMapper.map(park, ParkResponse.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withRel("counties").withType("GET"));
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withRel("animals").withType("GET"));
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched park with ID " + parkId, parkResponseDto);
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched park with ID " + parkId, parkResponseDto);
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -82,12 +82,12 @@ public class ParkRestController {
 
         Set<AnimalEntity> animals = parkService.getAnimalsByParkId(parkId);
 
-        List<AnimalDto> animalDtos = animals.stream()
-                .map(animal -> modelMapper.map(animal, AnimalDto.class))
+        List<AnimalResponse> animalDtos = animals.stream()
+                .map(animal -> modelMapper.map(animal, AnimalResponse.class))
                 .collect(Collectors.toList());
 
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
 
         responseDtos.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
         responseDtos.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
@@ -100,12 +100,12 @@ public class ParkRestController {
 
         Set<CountyEntity> counties = parkService.getCountiesByParkId(parkId);
 
-        List<CountyDto> countyDtos = counties.stream()
-                .map(county -> modelMapper.map(county, CountyDto.class))
+        List<CountyResponse> countyDtos = counties.stream()
+                .map(county -> modelMapper.map(county, CountyResponse.class))
                 .toList();
 
 
-        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
+        Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
 
         responseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withSelfRel());
         responseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
@@ -122,31 +122,32 @@ public class ParkRestController {
             throw new EntityNotFoundException("Park with ID " + parkId + " doesnt have peak");
         }
 
-        HighestPeakDto highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakDto.class);
+        HighestPeakResponse highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakResponse.class);
 
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withSelfRel());
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
 
-        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.OK, "Fetched peak for park with ID " + parkId, highestPeakDto);
+        Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched peak for park with ID " + parkId, highestPeakDto);
 
         return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping
-    public ResponseEntity<?> addNewPark(@Valid @RequestBody CreateParkRequest createParkRequest) {
+    public ResponseEntity<?> addNewPark(@RequestBody @Validated(CreateParkRequest.class)  CreateParkRequest createParkRequest) {
 
-        if(parkService.parkExists(createParkRequest.getParkName())){
-            throw new EntityExistsException("Park " + createParkRequest.getParkName() + " already exists");
-        }
 
-        ParkEntity newPark = parkService.createPark(createParkRequest);
-        ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
+            if (parkService.parkExists(createParkRequest.getParkName())) {
+                throw new EntityExistsException("Park " + createParkRequest.getParkName() + " already exists");
+            }
+            ParkEntity newPark = parkService.createPark(new ParkEntity(), createParkRequest);
 
-        parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
+            ParkResponse parkResponseDto = modelMapper.map(newPark, ParkResponse.class);
 
-        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "New park created", parkResponseDto);
+            parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
 
-        return ResponseEntity.ok(responseDto);
+            Response<Object> responseDto = new Response<>(HttpStatus.CREATED, "New park created", parkResponseDto);
+
+            return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{parkID}")
@@ -155,19 +156,16 @@ public class ParkRestController {
         ParkEntity newPark;
 
         if(!parkService.existsByID(parkID)){
-            newPark = parkService.createPark(createParkRequest);
-        }else{
-            newPark = parkService.updatePark(parkID, createParkRequest);
-
+            throw new EntityNotFoundException("Park with ID " + parkID + " doesnt exists");
         }
 
-        System.out.println(newPark);
+        newPark = parkService.createPark(parkService.getParkByID(parkID), createParkRequest);
 
-        ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
+        ParkResponse parkResponseDto = modelMapper.map(newPark, ParkResponse.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
 
-        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "Park updated", parkResponseDto);
+        Response<Object> responseDto = new Response<>(HttpStatus.CREATED, "Park updated", parkResponseDto);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -181,7 +179,7 @@ public class ParkRestController {
 
         parkService.deleteById(parkID);
 
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK, "Park deleted.", null));
+        return ResponseEntity.ok(new Response<>(HttpStatus.OK, "Park deleted.", null));
     }
 
 }
