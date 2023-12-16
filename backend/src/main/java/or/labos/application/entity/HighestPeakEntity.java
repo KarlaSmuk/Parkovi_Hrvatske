@@ -13,6 +13,8 @@ import org.hibernate.annotations.UuidGenerator;
 public class HighestPeakEntity {
 
     @Id
+    @GeneratedValue(generator="my_seq")
+    @SequenceGenerator(initialValue=100, name="my_seq", sequenceName="peak_seq", allocationSize=1)
     @Column(name = "sifvrh")
     private Integer peakID;
 

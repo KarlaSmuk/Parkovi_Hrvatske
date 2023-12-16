@@ -16,7 +16,8 @@ import java.util.Set;
 public class ParkEntity extends RepresentationModel<ParkEntity> {
 
     @Id
-    @UuidGenerator
+    @GeneratedValue(generator="my_seq")
+    @SequenceGenerator(initialValue=100, name="my_seq", sequenceName="park_seq", allocationSize=1)
     @Column( name = "sifpark")
     private Integer parkID;
 
@@ -34,6 +35,10 @@ public class ParkEntity extends RepresentationModel<ParkEntity> {
 
     @Column(name = "nazdoggod")
     private String event;
+
+    @ManyToOne
+    @JoinColumn(name = "siftippark", referencedColumnName = "siftippark")
+    private TypeOfParkEntity typeOfPark;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sifvrh", referencedColumnName = "sifvrh")
@@ -55,8 +60,6 @@ public class ParkEntity extends RepresentationModel<ParkEntity> {
     )
     Set<AnimalEntity> parkAnimals;
 
-    @ManyToOne
-    @JoinColumn(name = "siftippark")
-    private TypeOfParkEntity typeOfPark;
+
 
 }

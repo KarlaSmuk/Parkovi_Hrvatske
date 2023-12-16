@@ -18,7 +18,8 @@ import java.util.Set;
 public class AnimalEntity  {
 
     @Id
-    @UuidGenerator
+    @GeneratedValue(generator="my_seq")
+    @SequenceGenerator(initialValue=100, name="my_seq", sequenceName="zivotinje_seq", allocationSize=1)
     @Column(name = "sifzivotinja")
     private Integer animalID;
 

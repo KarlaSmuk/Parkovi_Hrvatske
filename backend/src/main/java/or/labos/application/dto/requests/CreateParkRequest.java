@@ -4,6 +4,7 @@ import lombok.*;
 import or.labos.application.dto.AnimalDto;
 import or.labos.application.dto.CountyDto;
 import or.labos.application.dto.HighestPeakDto;
+import or.labos.application.dto.TypeOfParkDto;
 import or.labos.application.entity.TypeOfParkEntity;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class CreateParkRequest {
 
     private String parkName;
-    private String typeOfPark;
+    private TypeOfParkDto typeOfParkName;
     private Integer yearOfFoundation;
     private Double area;
     private HighestPeakDto peak;
