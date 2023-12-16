@@ -36,10 +36,6 @@ public class ParkEntity extends RepresentationModel<ParkEntity> {
     @Column(name = "nazdoggod")
     private String event;
 
-    @ManyToOne
-    @JoinColumn(name = "siftippark", referencedColumnName = "siftippark")
-    private TypeOfParkEntity typeOfPark;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "sifvrh", referencedColumnName = "sifvrh")
     private HighestPeakEntity peakOfPark;
@@ -60,6 +56,8 @@ public class ParkEntity extends RepresentationModel<ParkEntity> {
     )
     Set<AnimalEntity> parkAnimals;
 
-
+    @ManyToOne
+    @JoinColumn(name = "siftippark")
+    private TypeOfParkEntity typeOfPark;
 
 }

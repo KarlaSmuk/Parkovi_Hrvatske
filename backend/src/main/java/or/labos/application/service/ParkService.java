@@ -3,6 +3,7 @@ package or.labos.application.service;
 import or.labos.application.dto.requests.CreateParkRequest;
 import or.labos.application.entity.AnimalEntity;
 import or.labos.application.entity.CountyEntity;
+import or.labos.application.entity.HighestPeakEntity;
 import or.labos.application.entity.ParkEntity;
 
 import java.util.List;
@@ -54,4 +55,6 @@ public interface ParkService {
     void deleteById(Integer parkID);
 
     ParkEntity updatePark(Integer parkID, CreateParkRequest createParkRequest);
+
+    HighestPeakEntity getPeakByID(Integer parkID);
 }

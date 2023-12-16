@@ -1,5 +1,6 @@
 package or.labos.application.service.impl;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import or.labos.application.dto.AnimalDto;
@@ -32,17 +33,13 @@ public class ParkServiceImpl implements ParkService {
     @Autowired
     private HighestPeakRepository highestPeakRepository;
 
-    private final ModelMapper modelMapper = new ModelMapper();
-
-    private Random random = new Random();
-
     @Override
-    public List<ParkEntity> listAll(){
+    public List<ParkEntity> listAll() {
         return parkRepo.findAll();
     }
 
     @Override
-    public List<ParkEntity> findByParkNameIgnoreCase(String parkName){
+    public List<ParkEntity> findByParkNameIgnoreCase(String parkName) {
         return parkRepo.findByParkNameIgnoreCase(parkName);
     }
 
@@ -122,6 +119,15 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
+    public HighestPeakEntity getPeakByID(Integer parkID) {
+
+        ParkEntity park = parkRepo.findById(parkID)
+                .orElseThrow(() -> new EntityNotFoundException("Peak not found for park with ID: " + parkID));
+        return park.getPeakOfPark();
+    }
+
+
+    @Override
     public Boolean parkExists(String parkName) {
         return parkRepo.existsByParkName(parkName);
     }
@@ -135,10 +141,13 @@ public class ParkServiceImpl implements ParkService {
     @Transactional
     public ParkEntity createPark(CreateParkRequest createParkRequest) {
 
-        //to entity
-        ParkEntity parkEntity = modelMapper.map(createParkRequest, ParkEntity.class);
+        if(parkRepo.existsByParkName(createParkRequest.getParkName())){
+            throw new EntityExistsException("Park already exists");
+        }
 
-        /*parkEntity.setParkID(parkRepo.getMaxId() + 1);
+        //to entity
+        ParkEntity parkEntity = new ParkEntity(); //= modelMapper.map(createParkRequest, ParkEntity.class);
+
         parkEntity.setParkName(createParkRequest.getParkName());
         parkEntity.setYearOfFoundation(createParkRequest.getYearOfFoundation());
         parkEntity.setArea(createParkRequest.getArea());
@@ -146,7 +155,7 @@ public class ParkServiceImpl implements ParkService {
         parkEntity.setEvent(createParkRequest.getEvent());
 
         //type - add exisiting
-        TypeOfParkEntity typeOfPark = typeOfParkRepository.findByTypeOfParkName(createParkRequest.getTypeOfPark());
+        TypeOfParkEntity typeOfPark = typeOfParkRepository.findByTypeOfParkName(createParkRequest.getTypeOfParkName());
         parkEntity.setTypeOfPark(typeOfPark);
 
         // animals - add exisiting or create new one
@@ -155,7 +164,6 @@ public class ParkServiceImpl implements ParkService {
             AnimalEntity animal = animalRepository.findByAnimalName(animalDto.getAnimalName())
                     .orElseGet(() -> {
                         AnimalEntity newAnimal = new AnimalEntity();
-                        newAnimal.setAnimalID(animalRepository.getMaxId() + 1);
                         newAnimal.setAnimalName(animalDto.getAnimalName());
                         newAnimal.setSpeciesOfAnimal(animalDto.getSpeciesOfAnimal());
                         return animalRepository.save(newAnimal);
@@ -180,87 +188,68 @@ public class ParkServiceImpl implements ParkService {
         HighestPeakEntity peak = highestPeakRepository.findByPeakName(createParkRequest.getPeak().getPeakName())
                 .orElseGet(() -> {
                     HighestPeakEntity newPeak = new HighestPeakEntity();
-                    newPeak.setPeakID(highestPeakRepository.getMaxId() + 1);
                     newPeak.setPeakName(createParkRequest.getPeak().getPeakName());
                     newPeak.setPeakHeight(createParkRequest.getPeak().getPeakHeight());
                     return highestPeakRepository.save(newPeak);
                 });
-        parkEntity.setPeakOfPark(peak);*/
+        parkEntity.setPeakOfPark(peak);
 
         return parkRepo.save(parkEntity);
     }
 
     @Override
     @Transactional
-    public ParkEntity updatePark(Integer parkID, CreateParkRequest createParkRequest){
-
-        /*ParkEntity park = parkRepo.findByParkID(parkID);
-
-                    park.setParkName(createParkRequest.getParkName());
-                    TypeOfParkEntity typeOfPark = typeOfParkRepository.findByTypeOfParkName(createParkRequest.getTypeOfPark());
-                    park.setTypeOfPark(typeOfPark);
-                    park.setYearOfFoundation(createParkRequest.getYearOfFoundation());
-                    park.setArea(createParkRequest.getArea());
-                    HighestPeakEntity peak = highestPeakRepository.findByPeakName(createParkRequest.getPeak().getPeakName())
-                            .orElseGet(() -> {
-                                HighestPeakEntity newPeak = new HighestPeakEntity();
-                                newPeak.setPeakID(highestPeakRepository.getMaxId() + 1);
-                                newPeak.setPeakName(createParkRequest.getPeak().getPeakName());
-                                newPeak.setPeakHeight(createParkRequest.getPeak().getPeakHeight());
-                                return highestPeakRepository.save(newPeak);
-                            });
-                    park.setPeakOfPark(peak);
-                    Set<CountyEntity> countyEntities = new HashSet<>();
-                    for (CountyDto countyDto : createParkRequest.getCounties()) {
-                        CountyEntity county = countyRepository.findByCountyName(countyDto.getCountyName())
-                                .orElseThrow(() -> new EntityNotFoundException("County not found: " + countyDto.getCountyName()));
-                        countyEntities.add(county);
-                    }
-                    park.setParkCounties(countyEntities);
-                    park.setParkCounties(countyEntities);
-                    park.setAtraction(createParkRequest.getAtraction());
-                    park.setEvent(createParkRequest.getEvent());
-                    Set<AnimalEntity> animalEntities = new HashSet<>();
-                    for (AnimalDto animalDto : createParkRequest.getAnimals()) {
-                        AnimalEntity animal = animalRepository.findByAnimalName(animalDto.getAnimalName())
-                                .orElseGet(() -> {
-                                    AnimalEntity newAnimal = new AnimalEntity();
-                                    newAnimal.setAnimalID(animalRepository.getMaxId() + 1);
-                                    newAnimal.setAnimalName(animalDto.getAnimalName());
-                                    newAnimal.setSpeciesOfAnimal(animalDto.getSpeciesOfAnimal());
-                                    return animalRepository.save(newAnimal);
-                                });
-                        animal.getHasAnimal().add(park);
-                        animalEntities.add(animal);
-                    }
-                    return parkRepo.save(park);*/
+    public ParkEntity updatePark(Integer parkID, CreateParkRequest createParkRequest) {
 
         ParkEntity park = parkRepo.findByParkID(parkID);
+
         park.setParkName(createParkRequest.getParkName());
-        park.setTypeOfPark(modelMapper.map(createParkRequest.getTypeOfParkName(), TypeOfParkEntity.class));//modelMapper.map(createParkRequest.getTypeOfPark(), TypeOfParkEntity.class)
+        TypeOfParkEntity typeOfPark = typeOfParkRepository.findByTypeOfParkName(createParkRequest.getTypeOfParkName());
+        park.setTypeOfPark(typeOfPark);
         park.setYearOfFoundation(createParkRequest.getYearOfFoundation());
         park.setArea(createParkRequest.getArea());
-        park.setAtraction(createParkRequest.getAtraction());
-        park.setEvent(createParkRequest.getEvent());
-        park.setPeakOfPark(modelMapper.map(createParkRequest.getPeak(), HighestPeakEntity.class));
-        Set<AnimalEntity> animalEntities = new HashSet<>();
-        for(AnimalDto animal : createParkRequest.getAnimals()){
-            animalEntities.add(modelMapper.map(animal, AnimalEntity.class));
-        }
-        park.setParkAnimals(animalEntities);
+        HighestPeakEntity peak = highestPeakRepository.findByPeakName(createParkRequest.getPeak().getPeakName())
+                .orElseGet(() -> {
+                    HighestPeakEntity newPeak = new HighestPeakEntity();
+                    newPeak.setPeakName(createParkRequest.getPeak().getPeakName());
+                    newPeak.setPeakHeight(createParkRequest.getPeak().getPeakHeight());
+                    return highestPeakRepository.save(newPeak);
+                });
+        park.setPeakOfPark(peak);
         Set<CountyEntity> countyEntities = new HashSet<>();
-        for(CountyDto county : createParkRequest.getCounties()){
-            countyEntities.add(modelMapper.map(county, CountyEntity.class));
+        for (CountyDto countyDto : createParkRequest.getCounties()) {
+            CountyEntity county = countyRepository.findByCountyName(countyDto.getCountyName())
+                    .orElseThrow(() -> new EntityNotFoundException("County not found: " + countyDto.getCountyName()));
+            countyEntities.add(county);
         }
         park.setParkCounties(countyEntities);
-
+        park.setAtraction(createParkRequest.getAtraction());
+        park.setEvent(createParkRequest.getEvent());
+        Set<AnimalEntity> animalEntities = new HashSet<>();
+        for (AnimalDto animalDto : createParkRequest.getAnimals()) {
+            AnimalEntity animal = animalRepository.findByAnimalName(animalDto.getAnimalName())
+                    .orElseGet(() -> {
+                        AnimalEntity newAnimal = new AnimalEntity();
+                        newAnimal.setAnimalName(animalDto.getAnimalName());
+                        newAnimal.setSpeciesOfAnimal(animalDto.getSpeciesOfAnimal());
+                        return animalRepository.save(newAnimal);
+                    });
+            animal.getHasAnimal().add(park);
+            animalEntities.add(animal);
+        }
+        park.setParkAnimals(animalEntities);
 
         return parkRepo.save(park);
     }
+
+
+
     @Override
     @Transactional
-    public void deleteById(Integer parkID){
-        ParkEntity parkEntity = parkRepo.findByParkID(parkID);
+    public void deleteById(Integer parkID) {
+
+        ParkEntity parkEntity = parkRepo.findById(parkID)
+                .orElseThrow(() -> new EntityNotFoundException("Park not found with ID: " + parkID));
 
         parkRepo.delete(parkEntity);
     }

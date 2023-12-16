@@ -4,9 +4,9 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import or.labos.application.dto.*;
 import or.labos.application.dto.requests.CreateParkRequest;
-import or.labos.application.dto.requests.CreateParkResponse;
 import or.labos.application.entity.AnimalEntity;
 import or.labos.application.entity.CountyEntity;
+import or.labos.application.entity.HighestPeakEntity;
 import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
 import org.modelmapper.ModelMapper;
@@ -50,10 +50,7 @@ public class ParkRestController {
 
         });
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>();
-        responseDtos.setStatus(HttpStatus.OK);
-        responseDtos.setMessage("Fetched all parks");
-        responseDtos.setResponse(parkResponseDtos);
+        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched all parks", parkResponseDtos);
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -70,14 +67,12 @@ public class ParkRestController {
         ParkEntity park = parkOptional.get();
 
         ParkResponseDto parkResponseDto = modelMapper.map(park, ParkResponseDto.class);
+
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withRel("counties").withType("GET"));
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withRel("animals").withType("GET"));
 
-        ResponseDto<Object> responseDtos = new ResponseDto<>();
-        responseDtos.setStatus(HttpStatus.OK);
-        responseDtos.setMessage("Fetched animals for park with ID " + parkId);
-        responseDtos.setResponse(parkResponseDto);
+        ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched park with ID " + parkId, parkResponseDto);
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -91,15 +86,12 @@ public class ParkRestController {
                 .map(animal -> modelMapper.map(animal, AnimalDto.class))
                 .collect(Collectors.toList());
 
-        animalDtos.forEach(animalResponseDto -> {
-            animalResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
-            animalResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
-        });
 
         ResponseDto<Object> responseDtos = new ResponseDto<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
-        /*responseDtos.setStatus(HttpStatus.OK);
-        responseDtos.setMessage("Fetched animals for park with ID " + parkId);
-        responseDtos.setResponse(animalDtos);*/
+
+        responseDtos.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
+        responseDtos.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
+
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -110,12 +102,32 @@ public class ParkRestController {
 
         List<CountyDto> countyDtos = counties.stream()
                 .map(county -> modelMapper.map(county, CountyDto.class))
-                .collect(Collectors.toList());
+                .toList();
+
 
         ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
-        /*responseDtos.setStatus(HttpStatus.OK);
-        responseDtos.setMessage("Fetched counties for park with ID " + parkId);
-        responseDtos.setResponse(countyDtos);*/
+
+        responseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withSelfRel());
+        responseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/{parkId}/peak")
+    public ResponseEntity<?> getPeakByParkID(@PathVariable Integer parkId) {
+
+        HighestPeakEntity highestPeakEntity = parkService.getPeakByID(parkId);
+
+        if(highestPeakEntity == null){
+            throw new EntityNotFoundException("Park with ID " + parkId + " doesnt have peak");
+        }
+
+        HighestPeakDto highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakDto.class);
+
+        highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withSelfRel());
+        highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
+
+        ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.OK, "Fetched peak for park with ID " + parkId, highestPeakDto);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -128,10 +140,9 @@ public class ParkRestController {
         }
 
         ParkEntity newPark = parkService.createPark(createParkRequest);
-        CreateParkResponse parkResponseDto = modelMapper.map(newPark, CreateParkResponse.class);
+        ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
-
 
         ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "New park created", parkResponseDto);
 
@@ -152,10 +163,9 @@ public class ParkRestController {
 
         System.out.println(newPark);
 
-        CreateParkResponse parkResponseDto = modelMapper.map(newPark, CreateParkResponse.class);
+        ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
-
 
         ResponseDto<Object> responseDto = new ResponseDto<>(HttpStatus.CREATED, "Park updated", parkResponseDto);
 
@@ -166,7 +176,7 @@ public class ParkRestController {
     public ResponseEntity<?> deletePark(@PathVariable Integer parkID){
 
         if(!parkService.existsByID(parkID)){
-            return ResponseEntity.notFound().build();
+            throw new EntityNotFoundException("Park with ID " + parkID + " doesnt exists");
         }
 
         parkService.deleteById(parkID);
