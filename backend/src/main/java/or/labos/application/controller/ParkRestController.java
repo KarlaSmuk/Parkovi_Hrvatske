@@ -2,6 +2,7 @@ package or.labos.application.controller;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import or.labos.application.dto.requests.*;
 import or.labos.application.entity.AnimalEntity;
 import or.labos.application.entity.CountyEntity;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -133,7 +133,7 @@ public class ParkRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addNewPark(@RequestBody @Validated(CreateParkRequest.class)  CreateParkRequest createParkRequest) {
+    public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) {
 
 
             if (parkService.parkExists(createParkRequest.getParkName())) {

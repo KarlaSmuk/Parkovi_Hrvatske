@@ -40,9 +40,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Response'    
         '409':
-          description: Park already exists  
-        '405':
-          description: Invalid input
+          description: Park already exists 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
   /api/parks/{parkId}:
     get:
       summary: Find park by id
@@ -65,6 +67,10 @@ paths:
                   $ref: '#/components/schemas/Response'          
         '404':
           description: Park not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
     put:
       summary: Update an existing park
       description: Update an existing park by Id
@@ -93,6 +99,10 @@ paths:
                 $ref: '#/components/schemas/Response'
         '404':
           description: Park not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
     delete:
       summary: Delete a park
       description: Delete a park
@@ -114,6 +124,10 @@ paths:
                 $ref: '#/components/schemas/Response'
         '404':
           description: Park doesnt exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/animals:
     get:
       summary: Find animals of park
@@ -136,6 +150,10 @@ paths:
                   $ref: '#/components/schemas/Response'          
         '404':
           description: Park not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/counties:
     get:
       summary: Find counties of park
@@ -158,6 +176,10 @@ paths:
                 $ref: '#/components/schemas/Response'          
         '404':
           description: Park not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/peak:
     get:
       summary: Find peak of park
@@ -177,11 +199,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'          
-        '400':
-          description: Invalid ID supplied
+                $ref: '#/components/schemas/Response'
         '404':
           description: Peak not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
   /api:
     get:
       summary: API
@@ -203,6 +227,15 @@ components:
           type: object
           items:
             $ref: '#/components/schemas/ParkResponse'
+    ResponseError:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        response:
+          type: string
     CreateParkRequest:
       type: object
       properties:

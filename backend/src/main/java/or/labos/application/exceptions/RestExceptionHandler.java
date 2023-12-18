@@ -11,8 +11,10 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@RestControllerAdvice
+import java.util.Arrays;
+
+//@Order(Ordered.HIGHEST_PRECEDENCE)
+@ControllerAdvice
 public class RestExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -56,10 +58,9 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> resolveException(MethodArgumentNotValidException ex) {
 
-
         Response<Object> responseDto = new Response<>();
         responseDto.setStatus(HttpStatus.BAD_REQUEST);
-        responseDto.setMessage("Validation error");
+        responseDto.setMessage("Validation failed");
         responseDto.setResponse(null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
