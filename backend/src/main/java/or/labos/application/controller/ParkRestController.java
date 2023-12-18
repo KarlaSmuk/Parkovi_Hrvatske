@@ -71,6 +71,8 @@ public class ParkRestController {
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withRel("counties").withType("GET"));
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withRel("animals").withType("GET"));
+        parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withRel("peak").withType("GET"));
+
 
         Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched park with ID " + parkId, parkResponseDto);
 

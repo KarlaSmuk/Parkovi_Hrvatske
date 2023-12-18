@@ -42,7 +42,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkResponse'    
+                $ref: '#/components/schemas/ParkResponseDto'
+        '400':
+          description: Peak already assigned to another park
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError' 
         '409':
           description: Park already exists 
           content:
@@ -105,6 +111,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParkResponse'
+        '400':
+          description: Peak already assigned to another park
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'  
         '404':
           description: Park not found
           content:
