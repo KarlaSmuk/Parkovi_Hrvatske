@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HighestPeakResponse extends RepresentationModel<HighestPeakResponse> {
+public class HighestPeakResponseDto extends RepresentationModel<HighestPeakResponseDto> {
 
     private Integer peakID;
     private String peakName;

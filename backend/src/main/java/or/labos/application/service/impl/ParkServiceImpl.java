@@ -176,8 +176,23 @@ public class ParkServiceImpl implements ParkService {
 
         parkEntity.setParkCounties(countyEntities);
 
-        // peaks - add exisiting and create new one
+        // peaks - create new one
         HighestPeakEntity peak = highestPeakRepository.findByPeakName(createParkRequest.getPeak().getPeakName())
+                .map(existingPeak -> {
+
+                    //update
+                    if(parkEntity.getParkID() != null){
+                       if(!existingPeak.getPark().getParkID().equals(parkEntity.getParkID())){
+                            throw new IllegalStateException("Peak already assigned to another park");
+                        }
+                    }else{ // create
+                        if (existingPeak.getPeakName().equals(createParkRequest.getPeak().getPeakName())) {
+                            throw new IllegalStateException("Peak already assigned to another park");
+                        }
+                    }
+
+                    return existingPeak;
+                })
                 .orElseGet(() -> {
                     HighestPeakEntity newPeak = new HighestPeakEntity();
                     newPeak.setPeakName(createParkRequest.getPeak().getPeakName());

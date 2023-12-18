@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CountyResponse {
+public class CountyResponseDto {
 
     private Integer countyID;
     private String countyName;

@@ -12,17 +12,17 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParkResponse extends RepresentationModel<ParkResponse>{
+public class ParkResponseDto extends RepresentationModel<ParkResponseDto>{
 
     private Integer parkId;
     private String parkName;
     private String typeOfParkName;
     private Integer yearOfFoundation;
     private Double area;
-    private HighestPeakResponse peak;
-    private List<CountyResponse> counties;
+    private HighestPeakResponseDto peak;
+    private List<CountyResponseDto> counties;
     private String atraction;
     private String event;
-    private List<AnimalResponse> animals;
+    private List<AnimalResponseDto> animals;
 
 }

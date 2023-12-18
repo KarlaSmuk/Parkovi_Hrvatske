@@ -3,17 +3,12 @@ package or.labos.application.exceptions;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import or.labos.application.dto.requests.Response;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-
-//@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class RestExceptionHandler {
 
@@ -61,6 +56,19 @@ public class RestExceptionHandler {
         Response<Object> responseDto = new Response<>();
         responseDto.setStatus(HttpStatus.BAD_REQUEST);
         responseDto.setMessage("Validation failed");
+        responseDto.setResponse(null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<?> resolveException(Exception e) {
+
+        Response<Object> responseDto = new Response<>();
+        responseDto.setStatus(HttpStatus.BAD_REQUEST);
+        responseDto.setMessage(e.getMessage());
         responseDto.setResponse(null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);

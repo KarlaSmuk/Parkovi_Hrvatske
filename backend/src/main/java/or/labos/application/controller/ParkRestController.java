@@ -11,9 +11,9 @@ import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -31,7 +31,7 @@ public class ParkRestController {
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-    @GetMapping("")
+    @GetMapping(value = "", produces = "application/json")
     public ResponseEntity<?> listAllParks() {
         List<ParkEntity> parks = parkService.listAll();
 
@@ -39,8 +39,8 @@ public class ParkRestController {
             return ResponseEntity.noContent().build();
         }
 
-        List<ParkResponse> parkResponseDtos = parks.stream()
-                .map(park -> modelMapper.map(park, ParkResponse.class))
+        List<ParkResponseDto> parkResponseDtos = parks.stream()
+                .map(park -> modelMapper.map(park, ParkResponseDto.class))
                 .collect(Collectors.toList());
 
         parkResponseDtos.forEach(parkResponseDto -> {
@@ -55,7 +55,7 @@ public class ParkRestController {
         return ResponseEntity.ok(responseDtos);
     }
 
-    @GetMapping("/{parkId}")
+    @GetMapping(value = "/{parkId}", produces="application/json")
     public ResponseEntity<?> getParkByID(@PathVariable Integer parkId) {
 
         Optional<ParkEntity> parkOptional = Optional.ofNullable(parkService.getParkByID(parkId));
@@ -66,7 +66,7 @@ public class ParkRestController {
 
         ParkEntity park = parkOptional.get();
 
-        ParkResponse parkResponseDto = modelMapper.map(park, ParkResponse.class);
+        ParkResponseDto parkResponseDto = modelMapper.map(park, ParkResponseDto.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withRel("counties").withType("GET"));
@@ -77,32 +77,34 @@ public class ParkRestController {
         return ResponseEntity.ok(responseDtos);
     }
 
-    @GetMapping("/{parkId}/animals")
+    @GetMapping(value = "/{parkId}/animals", produces = "application/json")
     public ResponseEntity<?> getAnimalsByPark(@PathVariable Integer parkId) {
 
         Set<AnimalEntity> animals = parkService.getAnimalsByParkId(parkId);
 
-        List<AnimalResponse> animalDtos = animals.stream()
-                .map(animal -> modelMapper.map(animal, AnimalResponse.class))
+        List<AnimalResponseDto> animalDtos = animals.stream()
+                .map(animal -> modelMapper.map(animal, AnimalResponseDto.class))
                 .collect(Collectors.toList());
 
 
-        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
+        CollectionModel<AnimalResponseDto> animalCollection = CollectionModel.of(animalDtos);
+        animalCollection.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
+        animalCollection.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
 
-        responseDtos.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
-        responseDtos.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalCollection);
 
 
         return ResponseEntity.ok(responseDtos);
     }
-    @GetMapping("/{parkId}/counties")
+    @GetMapping(value = "/{parkId}/counties", produces = "application/json")
     public ResponseEntity<?> getCountiesByPark(@PathVariable Integer parkId) {
 
         Set<CountyEntity> counties = parkService.getCountiesByParkId(parkId);
 
-        List<CountyResponse> countyDtos = counties.stream()
-                .map(county -> modelMapper.map(county, CountyResponse.class))
-                .toList();
+        List<CountyResponseDto> countyDtos = counties.stream()
+                .map(county -> modelMapper.map(county, CountyResponseDto.class))
+                .collect(Collectors.toList());
+
 
 
         Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
@@ -110,10 +112,11 @@ public class ParkRestController {
         responseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withSelfRel());
         responseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
 
+
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/{parkId}/peak")
+    @GetMapping(value = "/{parkId}/peak", produces = "application/json")
     public ResponseEntity<?> getPeakByParkID(@PathVariable Integer parkId) {
 
         HighestPeakEntity highestPeakEntity = parkService.getPeakByID(parkId);
@@ -122,7 +125,7 @@ public class ParkRestController {
             throw new EntityNotFoundException("Park with ID " + parkId + " doesnt have peak");
         }
 
-        HighestPeakResponse highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakResponse.class);
+        HighestPeakResponseDto highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakResponseDto.class);
 
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withSelfRel());
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
@@ -132,7 +135,7 @@ public class ParkRestController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping
+    @PostMapping(value = "", produces = "application/json")
     public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) {
 
 
@@ -141,7 +144,7 @@ public class ParkRestController {
             }
             ParkEntity newPark = parkService.createPark(new ParkEntity(), createParkRequest);
 
-            ParkResponse parkResponseDto = modelMapper.map(newPark, ParkResponse.class);
+            ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
 
             parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
 
@@ -150,7 +153,7 @@ public class ParkRestController {
             return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/{parkID}")
+    @PutMapping(value = "/{parkID}", produces = "application/json")
     public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest){
 
         ParkEntity newPark;
@@ -161,7 +164,7 @@ public class ParkRestController {
 
         newPark = parkService.createPark(parkService.getParkByID(parkID), createParkRequest);
 
-        ParkResponse parkResponseDto = modelMapper.map(newPark, ParkResponse.class);
+        ParkResponseDto parkResponseDto = modelMapper.map(newPark, ParkResponseDto.class);
 
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
 
@@ -170,7 +173,7 @@ public class ParkRestController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/{parkID}")
+    @DeleteMapping(value = "/{parkID}", produces = "application/json")
     public ResponseEntity<?> deletePark(@PathVariable Integer parkID){
 
         if(!parkService.existsByID(parkID)){

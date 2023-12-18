@@ -13,30 +13,22 @@ import java.util.List;
 @NoArgsConstructor
 public class CreateParkRequest {
 
-    @NotNull(message = "Park name cannot be null")
+    @NotNull
     private String parkName;
-
-    @NotNull(message = "Type of park name cannot be null")
+    @NotNull
     private String typeOfParkName;
-
-    @NotNull(message = "Year of foundation cannot be null")
+    @NotNull
     private Integer yearOfFoundation;
-
-    @NotNull(message = "Area cannot be null")
+    @NotNull
     private Double area;
-
-    @NotNull(message = "Peak cannot be null")
+    @NotNull
     private HighestPeakDto peak;
-
-    @NotNull(message = "Counties cannot be null")
+    @NotNull
     private List<CountyDto> counties;
-
-    @NotNull(message = "Atraction cannot be null")
+    @NotNull
     private String atraction;
-
-    @NotNull(message = "Event cannot be null")
+    @NotNull
     private String event;
-
-    @NotNull(message = "Animals cannot be null")
+    @NotNull
     private List<AnimalDto> animals;
 }
