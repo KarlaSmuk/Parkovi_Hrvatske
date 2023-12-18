@@ -6,7 +6,7 @@ info:
     name: Karla Šmuk
   license:
     name: CC0-1.0 license
-    url: https://creativecommons.org/publicdomain/zero/1.0/
+    url: 'https://creativecommons.org/publicdomain/zero/1.0/'
   version: 1.0.0
 paths:
   /api/parks:
@@ -22,10 +22,22 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/ParksResponse'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fetched all parks
+                  response:
+                    type: array
+                    format: list
+                    items:
+                      $ref: '#/components/schemas/ParkResponseDto'
     post:
       tags:
-          - Park REST Controller
+        - Park REST Controller
       summary: Add a new park
       description: Add a new park
       operationId: addNewPark
@@ -42,19 +54,47 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkResponseDto'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: CREATED
+                  message:
+                    type: string
+                    example: New park created
+                  response:
+                    type: object
+                    $ref: '#/components/schemas/ParkResponseDto'
         '400':
           description: Peak already assigned to another park
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError' 
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: BAD_REQUEST
+                  message:
+                    type: string
+                    example: Peak already assigned to another park
+                  response:
+                    example: null
         '409':
-          description: Park already exists 
+          description: Park already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: CONFLICT
+                  message:
+                    type: string
+                    example: Park already exists
+                  response:
+                    example: null
   /api/parks/{parkId}:
     get:
       tags:
@@ -76,13 +116,32 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/ParkResponse'          
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fetched park with parkId
+                  response:
+                    type: object
+                    $ref: '#/components/schemas/ParkResponseDto'
         '404':
           description: Park not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found
+                  response:
+                    example: null
     put:
       tags:
         - Park REST Controller
@@ -110,19 +169,47 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkResponse'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: CREATED
+                  message:
+                    type: string
+                    example: Park updated
+                  response:
+                    type: object
+                    $ref: '#/components/schemas/ParkResponseDto'
         '400':
           description: Peak already assigned to another park
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: BAD_REQUEST
+                  message:
+                    type: string
+                    example: Peak already assigned to another park
+                  response:
+                    example: null
         '404':
           description: Park not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found
+                  response:
+                    example: null
     delete:
       tags:
         - Park REST Controller
@@ -143,13 +230,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkDeletedResponse' 
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Park deleted
+                  response:
+                    example: null
         '404':
-          description: Park doesnt exist
+          description: Park not found
           content:
-            application/json:
+             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found
+                  response:
+                    example: null
   /api/parks/{parkId}/animals:
     get:
       tags:
@@ -171,14 +276,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnimalsResponse'       
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fetched animals for park with parkId
+                  response:
+                    type: array
+                    format: list
+                    items:
+                      $ref: '#/components/schemas/AnimalResponseDto'
         '404':
           description: Park not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
-  /api/parks/{parkId}/counties:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found
+                  response:
+                    example: null
+  '/api/parks/{parkId}/counties':
     get:
       tags:
         - Park REST Controller
@@ -199,13 +325,34 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CountiesResponse'           
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fetched counties for park with parkId
+                  response:
+                    type: array
+                    format: list
+                    items:
+                      $ref: '#/components/schemas/CountyResponseDto'
         '404':
           description: Park not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found
+                  response:
+                    example: null
   /api/parks/{parkId}/peak:
     get:
       tags:
@@ -227,13 +374,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeakResponse'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  message:
+                    type: string
+                    example: Fetched peak for park with parkId
+                  response:
+                    type: object
+                    $ref: '#/components/schemas/AnimalResponseDto'
         '404':
-          description: Peak not found
+          description: Peak/Park not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseError'  
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: NOT_FOUND
+                  message:
+                    type: string
+                    example: Park not found/Peak not found
+                  response:
+                    example: null
+                    
   /api:
     get:
       tags:
@@ -246,90 +413,6 @@ paths:
           description: Successful response
 components:
   schemas:
-    ParksResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Fetched all parks
-        response:
-          type: array
-          format: list
-          items:
-            $ref: '#/components/schemas/ParkResponseDto'
-    ParkResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Fetched park with parkId
-        response:
-          $ref: '#/components/schemas/ParkResponseDto'
-    ParkDeletedResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Park deleted
-        response:
-          example: null
-    PeakResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Fetched peak for park with parkId
-        response:
-          $ref: '#/components/schemas/HighestPeakResponseDto'
-    AnimalsResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Fetched animals for park with parkId
-        response:
-          type: array
-          format: list
-          items:
-            $ref: '#/components/schemas/AnimalResponseDto'
-    CountiesResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: Fetched counties for park with parkId
-        response:
-          type: array
-          format: list
-          items:
-            $ref: '#/components/schemas/CountyResponseDto'        
-    ResponseError:
-      type: object
-      properties:
-        status:
-          type: string
-        message:
-          type: string
-        response:
-          type: string
     CreateParkRequest:
       type: object
       properties:

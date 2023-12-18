@@ -101,19 +101,19 @@ public class ParkServiceImpl implements ParkService {
     @Override
     public ParkEntity getParkByID(Integer parkId) {
         return parkRepo.findById(parkId)
-                .orElseThrow(() -> new EntityNotFoundException("Park not found with ID: " + parkId));
+                .orElseThrow(() -> new EntityNotFoundException("Park not found"));
     }
 
     public Set<AnimalEntity> getAnimalsByParkId(Integer parkId) {
         ParkEntity park = parkRepo.findById(parkId)
-                .orElseThrow(() -> new EntityNotFoundException("Park not found with ID: " + parkId));
+                .orElseThrow(() -> new EntityNotFoundException("Park not found"));
         return park.getParkAnimals();
     }
 
     @Override
     public Set<CountyEntity> getCountiesByParkId(Integer parkId) {
         ParkEntity park = parkRepo.findById(parkId)
-                .orElseThrow(() -> new EntityNotFoundException("Park not found with ID: " + parkId));
+                .orElseThrow(() -> new EntityNotFoundException("Park not found"));
         return park.getParkCounties();
     }
 
@@ -121,7 +121,7 @@ public class ParkServiceImpl implements ParkService {
     public HighestPeakEntity getPeakByID(Integer parkID) {
 
         ParkEntity park = parkRepo.findById(parkID)
-                .orElseThrow(() -> new EntityNotFoundException("Peak not found for park with ID: " + parkID));
+                .orElseThrow(() -> new EntityNotFoundException("Peak not found"));
         return park.getPeakOfPark();
     }
 
@@ -170,7 +170,7 @@ public class ParkServiceImpl implements ParkService {
         Set<CountyEntity> countyEntities = new HashSet<>();
         for (CountyDto countyDto : createParkRequest.getCounties()) {
             CountyEntity county = countyRepository.findByCountyName(countyDto.getCountyName())
-                    .orElseThrow(() -> new EntityNotFoundException("County not found: " + countyDto.getCountyName()));
+                    .orElseThrow(() -> new EntityNotFoundException("County not found"));
             countyEntities.add(county);
         }
 
@@ -210,7 +210,7 @@ public class ParkServiceImpl implements ParkService {
     public void deleteById(Integer parkID) {
 
         ParkEntity parkEntity = parkRepo.findById(parkID)
-                .orElseThrow(() -> new EntityNotFoundException("Park not found with ID: " + parkID));
+                .orElseThrow(() -> new EntityNotFoundException("Park not found"));
 
         parkRepo.delete(parkEntity);
     }

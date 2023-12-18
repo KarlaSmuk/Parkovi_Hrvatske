@@ -61,7 +61,7 @@ public class ParkRestController {
         Optional<ParkEntity> parkOptional = Optional.ofNullable(parkService.getParkByID(parkId));
 
         if (parkOptional.isEmpty()) {
-            throw new EntityNotFoundException("Park not found with ID: " + parkId);
+            throw new EntityNotFoundException("Park not found");
         }
 
         ParkEntity park = parkOptional.get();
@@ -119,10 +119,14 @@ public class ParkRestController {
     @GetMapping(value = "/{parkId}/peak", produces = "application/json")
     public ResponseEntity<?> getPeakByParkID(@PathVariable Integer parkId) {
 
+        if(!parkService.existsByID(parkId)){
+            throw new EntityNotFoundException("Park not found");
+        }
+
         HighestPeakEntity highestPeakEntity = parkService.getPeakByID(parkId);
 
         if(highestPeakEntity == null){
-            throw new EntityNotFoundException("Park with ID " + parkId + " doesnt have peak");
+            throw new EntityNotFoundException("Peak not found");
         }
 
         HighestPeakResponseDto highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakResponseDto.class);
@@ -142,7 +146,7 @@ public class ParkRestController {
 
 
             if (parkService.parkExists(createParkRequest.getParkName())) {
-                throw new EntityExistsException("Park " + createParkRequest.getParkName() + " already exists");
+                throw new EntityExistsException("Park already exists");
             }
             ParkEntity newPark = parkService.createPark(new ParkEntity(), createParkRequest);
 
@@ -161,7 +165,7 @@ public class ParkRestController {
         ParkEntity newPark;
 
         if(!parkService.existsByID(parkID)){
-            throw new EntityNotFoundException("Park with ID " + parkID + " doesnt exists");
+            throw new EntityNotFoundException("Park not found");
         }
 
         newPark = parkService.createPark(parkService.getParkByID(parkID), createParkRequest);
@@ -179,7 +183,7 @@ public class ParkRestController {
     public ResponseEntity<?> deletePark(@PathVariable Integer parkID){
 
         if(!parkService.existsByID(parkID)){
-            throw new EntityNotFoundException("Park with ID " + parkID + " doesnt exists");
+            throw new EntityNotFoundException("Park not found");
         }
 
         parkService.deleteById(parkID);
