@@ -11,6 +11,8 @@ info:
 paths:
   /api/parks:
     get:
+      tags:
+        - Park REST Controller
       summary: Fetch all parks
       description: Fetch all parks
       operationId: listAllParks
@@ -20,8 +22,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/ParksResponse'
     post:
+      tags:
+          - Park REST Controller
       summary: Add a new park
       description: Add a new park
       operationId: addNewPark
@@ -38,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'    
+                $ref: '#/components/schemas/ParkResponse'    
         '409':
           description: Park already exists 
           content:
@@ -47,6 +51,8 @@ paths:
                 $ref: '#/components/schemas/ResponseError'
   /api/parks/{parkId}:
     get:
+      tags:
+        - Park REST Controller
       summary: Find park by id
       description: Returns a park
       operationId: getParkByID
@@ -64,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Response'          
+                  $ref: '#/components/schemas/ParkResponse'          
         '404':
           description: Park not found
           content:
@@ -72,6 +78,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseError'  
     put:
+      tags:
+        - Park REST Controller
       summary: Update an existing park
       description: Update an existing park by Id
       operationId: updatePark
@@ -96,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/ParkResponse'
         '404':
           description: Park not found
           content:
@@ -104,6 +112,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseError'  
     delete:
+      tags:
+        - Park REST Controller
       summary: Delete a park
       description: Delete a park
       operationId: deletePark
@@ -121,7 +131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/ParkDeletedResponse' 
         '404':
           description: Park doesnt exist
           content:
@@ -130,6 +140,8 @@ paths:
                 $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/animals:
     get:
+      tags:
+        - Park REST Controller
       summary: Find animals of park
       description: Returns animals of park
       operationId: getAnimalsByPark
@@ -147,7 +159,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Response'          
+                $ref: '#/components/schemas/AnimalsResponse'       
         '404':
           description: Park not found
           content:
@@ -156,6 +168,8 @@ paths:
                 $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/counties:
     get:
+      tags:
+        - Park REST Controller
       summary: Find counties of park
       description: Returns counties of park
       operationId: getCountiesByPark
@@ -173,7 +187,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'          
+                $ref: '#/components/schemas/CountiesResponse'           
         '404':
           description: Park not found
           content:
@@ -182,6 +196,8 @@ paths:
                 $ref: '#/components/schemas/ResponseError'  
   /api/parks/{parkId}/peak:
     get:
+      tags:
+        - Park REST Controller
       summary: Find peak of park
       description: Returns peak of park
       operationId: getPeakByParkID
@@ -199,7 +215,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Response'
+                $ref: '#/components/schemas/PeakResponse'
         '404':
           description: Peak not found
           content:
@@ -208,6 +224,8 @@ paths:
                 $ref: '#/components/schemas/ResponseError'  
   /api:
     get:
+      tags:
+        - API Controller
       summary: API
       description: Returns openapi specification
       operationId: getAPI
@@ -216,17 +234,81 @@ paths:
           description: Successful response
 components:
   schemas:
-    Response:
+    ParksResponse:
       type: object
       properties:
         status:
           type: string
+          example: OK
         message:
           type: string
+          example: Fetched all parks
         response:
-          type: object
+          type: array
+          format: list
           items:
-            $ref: '#/components/schemas/ParkResponse'
+            $ref: '#/components/schemas/ParkResponseDto'
+    ParkResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Fetched park with parkId
+        response:
+          $ref: '#/components/schemas/ParkResponseDto'
+    ParkDeletedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Park deleted
+        response:
+          example: null
+    PeakResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Fetched peak for park with parkId
+        response:
+          $ref: '#/components/schemas/HighestPeakResponseDto'
+    AnimalsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Fetched animals for park with parkId
+        response:
+          type: array
+          format: list
+          items:
+            $ref: '#/components/schemas/AnimalResponseDto'
+    CountiesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: Fetched counties for park with parkId
+        response:
+          type: array
+          format: list
+          items:
+            $ref: '#/components/schemas/CountyResponseDto'        
     ResponseError:
       type: object
       properties:
@@ -266,7 +348,7 @@ components:
           format: list
           items:
             $ref: '#/components/schemas/AnimalDto'
-    ParkResponse:
+    ParkResponseDto:
       type: object
       properties:
         parkId:
@@ -283,12 +365,12 @@ components:
         peak:
           type: object
           items:
-            $ref: '#/components/schemas/HighestPeakResponse'
+            $ref: '#/components/schemas/HighestPeakResponseDto'
         counties:
           type: array
           format: list
           items:
-            $ref: '#/components/schemas/CountyResponse'
+            $ref: '#/components/schemas/CountyResponseDto'
         atraction:
           type: string
         event:
@@ -297,8 +379,8 @@ components:
           type: array
           format: list
           items:
-            $ref: '#/components/schemas/AnimalResponse'
-    HighestPeakResponse:
+            $ref: '#/components/schemas/AnimalResponseDto'
+    HighestPeakResponseDto:
       type: object
       properties:
         peakID:
@@ -307,7 +389,7 @@ components:
           type: string
         peakHeight:
           type: integer
-    AnimalResponse:
+    AnimalResponseDto:
       type: object
       properties:
         animalID:
@@ -316,7 +398,7 @@ components:
           type: string
         speciesOfAnimal:
           type: string
-    CountyResponse:
+    CountyResponseDto:
       type: object
       properties:
         countyID:

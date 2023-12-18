@@ -129,7 +129,7 @@ public class ParkRestController {
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withSelfRel());
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
         */
-        
+
         Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched peak for park with ID " + parkId, highestPeakDto);
 
         return ResponseEntity.ok(responseDto);
@@ -182,7 +182,7 @@ public class ParkRestController {
 
         parkService.deleteById(parkID);
 
-        return ResponseEntity.ok(new Response<>(HttpStatus.OK, "Park deleted.", null));
+        return ResponseEntity.ok(new Response<>(HttpStatus.OK, "Park deleted", null));
     }
 
 }
