@@ -48,9 +48,9 @@ public class RestExceptionHandler {
     @ResponseBody
     public ResponseEntity<Object> resolveException(MethodArgumentNotValidException ex) {
 
-        Response<Object> responseDto = new Response<>(HttpStatus.BAD_REQUEST, "Validation failed", null);
+        Response<Object> responseDto = new Response<>(HttpStatus.UNPROCESSABLE_ENTITY, "Validation failed", null);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responseDto);
     }

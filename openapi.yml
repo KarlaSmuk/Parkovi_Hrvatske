@@ -95,6 +95,21 @@ paths:
                     example: Park already exists
                   response:
                     example: null
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UNPROCESSABLE_ENTITY
+                  message:
+                    type: string
+                    example: Validation failed
+                  response:
+                    example: null
   /api/parks/{parkId}:
     get:
       tags:
@@ -208,6 +223,21 @@ paths:
                   message:
                     type: string
                     example: Park not found
+                  response:
+                    example: null
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UNPROCESSABLE_ENTITY
+                  message:
+                    type: string
+                    example: Validation failed
                   response:
                     example: null
     delete:
@@ -427,8 +457,7 @@ components:
           format: double
         peak:
           type: object
-          items:
-            $ref: '#/components/schemas/HighestPeakDto'
+          $ref: '#/components/schemas/HighestPeakDto'
         counties:
           type: array
           format: list
@@ -459,8 +488,7 @@ components:
           format: double
         peak:
           type: object
-          items:
-            $ref: '#/components/schemas/HighestPeakResponseDto'
+          $ref: '#/components/schemas/HighestPeakResponseDto'
         counties:
           type: array
           format: list
