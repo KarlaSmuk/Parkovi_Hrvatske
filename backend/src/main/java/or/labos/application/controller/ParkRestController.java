@@ -84,14 +84,14 @@ public class ParkRestController {
 
         List<AnimalResponseDto> animalDtos = animals.stream()
                 .map(animal -> modelMapper.map(animal, AnimalResponseDto.class))
-                .collect(Collectors.toList());
+                .toList();
 
 
-        CollectionModel<AnimalResponseDto> animalCollection = CollectionModel.of(animalDtos);
+       /* CollectionModel<AnimalResponseDto> animalCollection = CollectionModel.of(animalDtos);
         animalCollection.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withSelfRel());
         animalCollection.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
-
-        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalCollection);
+*/
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched animals for park with ID " + parkId, animalDtos);
 
 
         return ResponseEntity.ok(responseDtos);
@@ -105,13 +105,11 @@ public class ParkRestController {
                 .map(county -> modelMapper.map(county, CountyResponseDto.class))
                 .collect(Collectors.toList());
 
-
-
         Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched counties for park with ID " + parkId, countyDtos);
 
-        responseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withSelfRel());
+        /*responseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withSelfRel());
         responseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
-
+        */
 
         return ResponseEntity.ok(responseDto);
     }
@@ -127,9 +125,11 @@ public class ParkRestController {
 
         HighestPeakResponseDto highestPeakDto = modelMapper.map(highestPeakEntity, HighestPeakResponseDto.class);
 
+        /*
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withSelfRel());
         highestPeakDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withRel("previous"));
-
+        */
+        
         Response<Object> responseDto = new Response<>(HttpStatus.OK, "Fetched peak for park with ID " + parkId, highestPeakDto);
 
         return ResponseEntity.ok(responseDto);
