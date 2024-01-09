@@ -21,8 +21,7 @@ public class ParkController {
     public ResponseEntity<List<ParkDto>> listParks(){
 
         List<ParkEntity> parks = parkService.listAll();
-
-
+        
         List<ParkDto> parkDtos = new ArrayList<>();
 
         parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
