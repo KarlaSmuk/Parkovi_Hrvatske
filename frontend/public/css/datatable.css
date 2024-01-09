@@ -122,3 +122,26 @@ input{
 .list-all:hover{
     cursor: pointer;
 }
+
+nav{
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+li{
+    list-style-type: none;
+    padding: 1rem;
+}
+
+a button{
+    width: 80px;
+    height: 35px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: #c31111;
+    color: #f3f3f3;
+    border-radius: 5px;
+}
+
+button:hover{
+    cursor: pointer;
+}
