@@ -1,13 +1,17 @@
 package or.labos.application.controller;
 
 import or.labos.application.dto.ParkDto;
+import or.labos.application.entity.AnimalEntity;
+import or.labos.application.entity.CountyEntity;
 import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/")
@@ -16,129 +20,56 @@ public class ParkController {
     @Autowired
     private ParkService parkService;
 
+    private final ModelMapper modelMapper = new ModelMapper();
+
     @CrossOrigin
     @GetMapping(value= "/parks")
     public ResponseEntity<List<ParkDto>> listParks(){
 
         List<ParkEntity> parks = parkService.listAll();
-        
-        List<ParkDto> parkDtos = new ArrayList<>();
 
-        parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
-            if (!Objects.isNull(park.getPeakOfPark())) {
-                parkDtos.add(new ParkDto(
-                        park.getParkName(),
-                        park.getTypeOfPark().getTypeOfParkName(),
-                        park.getYearOfFoundation(),
-                        park.getArea(),
-                        park.getPeakOfPark().getPeakName(),
-                        park.getPeakOfPark().getPeakHeight(),
-                        countyEntity.getCountyName(),
-                        park.getAtraction(),
-                        park.getEvent(),
-                        animalEntity.getAnimalName(),
-                        animalEntity.getSpeciesOfAnimal()
-                ));
-            } else {
-                parkDtos.add(new ParkDto(
-                        park.getParkName(),
-                        park.getTypeOfPark().getTypeOfParkName(),
-                        park.getYearOfFoundation(),
-                        park.getArea(),
-                        countyEntity.getCountyName(),
-                        park.getAtraction(),
-                        park.getEvent(),
-                        animalEntity.getAnimalName(),
-                        animalEntity.getSpeciesOfAnimal()
-                ));
-            }
-        })));
-
-        return ResponseEntity.ok().body(parkDtos);
+        return getListResponseEntity(parks, new ArrayList<>());
     }
 
     @CrossOrigin
     @GetMapping(value = "/search/{attribute}/{value}")
     public ResponseEntity<List<ParkDto>> fetch(@PathVariable(value = "attribute") String attribute, @PathVariable(value = "value") String value){
 
-        List<ParkEntity>  parks = null;
-
-        switch (attribute) {
-            case "parkName":
-                parks = parkService.findByParkNameIgnoreCase(value);
-                break;
-            case "typeOfPark":
-                parks =  parkService.findByTypeOfParkTypeOfParkNameIgnoreCase(value);
-                break;
-            case "yearOfFoundation":
-                parks =  parkService.findByYearOfFoundation(value);
-                break;
-            case "area":
-                parks =  parkService.findByAreaEquals(value);
-                break;
-            case "peakName":
-                parks =  parkService.findByPeakOfParkPeakNameIgnoreCase(value);
-                break;
-            case "peakHeight":
-                parks =  parkService.findByPeakOfParkPeakHeight(value);
-                break;
-            case "countyName":
-                parks =  parkService.findAllByCountyIgnoreCase(value);
-                break;
-            case "atraction":
-                parks =  parkService.findByAtractionIgnoreCase(value);
-                break;
-            case "event":
-                parks =  parkService.findByEventIgnoreCase(value);
-                break;
-            case "animalName":
-                parks =  parkService.findByParkAnimalsNameIgnoreCase(value);
-                break;
-            case "speciesOfAnimal":
-                parks =  parkService.findByParkAnimalsSpeciesIgnoreCase(value);
-                break;
-            case "wildcard" :
-                parks = parkService.findByAllAttributesWithoutPeak(value);
-                break;
-            default:
-                break;
-        }
-        
-        List<ParkDto> parkDtos = new ArrayList<>();
+        List<ParkEntity> parks = parkService.findByAttribute(attribute, value);
 
         assert parks != null;
-        parks.forEach(park -> park.getParkAnimals().forEach(animalEntity -> park.getParkCounties().forEach(countyEntity -> {
-            if (!Objects.isNull(park.getPeakOfPark())) {
-                parkDtos.add(new ParkDto(
-                        park.getParkName(),
-                        park.getTypeOfPark().getTypeOfParkName(),
-                        park.getYearOfFoundation(),
-                        park.getArea(),
-                        park.getPeakOfPark().getPeakName(),
-                        park.getPeakOfPark().getPeakHeight(),
-                        countyEntity.getCountyName(),
-                        park.getAtraction(),
-                        park.getEvent(),
-                        animalEntity.getAnimalName(),
-                        animalEntity.getSpeciesOfAnimal()
-                ));
+        return getListResponseEntity(parks, new ArrayList<>());
+
+    }
+
+    private ResponseEntity<List<ParkDto>> getListResponseEntity(List<ParkEntity> parks, List<ParkDto> parkDtos) {
+        parks.forEach(park -> {
+            if (park.getPeakOfPark() != null) {
+                park.getParkAnimals().forEach(animalEntity ->
+                        park.getParkCounties().forEach(countyEntity -> {
+                            ParkDto parkDto = modelMapper.map(park, ParkDto.class);
+                            parkDto.setPeakName(park.getPeakOfPark().getPeakName());
+                            parkDto.setPeakHeight(park.getPeakOfPark().getPeakHeight());
+                            parkDto.setAnimal(animalEntity.getAnimalName());
+                            parkDto.setSpecies(animalEntity.getSpeciesOfAnimal());
+                            parkDto.setCounty(countyEntity.getCountyName());
+                            parkDtos.add(parkDto);
+                        })
+                );
             } else {
-                parkDtos.add(new ParkDto(
-                        park.getParkName(),
-                        park.getTypeOfPark().getTypeOfParkName(),
-                        park.getYearOfFoundation(),
-                        park.getArea(),
-                        countyEntity.getCountyName(),
-                        park.getAtraction(),
-                        park.getEvent(),
-                        animalEntity.getAnimalName(),
-                        animalEntity.getSpeciesOfAnimal()
-                ));
+                park.getParkAnimals().forEach(animalEntity ->
+                        park.getParkCounties().forEach(countyEntity -> {
+                            ParkDto parkDto = modelMapper.map(park, ParkDto.class);
+                            parkDto.setAnimal(animalEntity.getAnimalName());
+                            parkDto.setSpecies(animalEntity.getSpeciesOfAnimal());
+                            parkDto.setCounty(countyEntity.getCountyName());
+                            parkDtos.add(parkDto);
+                        })
+                );
             }
-        })));
+        });
 
         return ResponseEntity.ok().body(parkDtos);
-
     }
 
 }

@@ -38,67 +38,6 @@ public class ParkServiceImpl implements ParkService {
     }
 
     @Override
-    public List<ParkEntity> findByParkNameIgnoreCase(String parkName) {
-        return parkRepo.findByParkNameIgnoreCase(parkName);
-    }
-
-    @Override
-    public List<ParkEntity> findByYearOfFoundation(String value) {
-        return parkRepo.findByYearOfFoundation(Integer.valueOf(value));
-    }
-
-    @Override
-    public List<ParkEntity> findByTypeOfParkTypeOfParkNameIgnoreCase(String value) {
-        return parkRepo.findByTypeOfParkTypeOfParkNameIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByAreaEquals(String value) {
-        return parkRepo.findByAreaEquals(Double.valueOf(value));
-    }
-
-    @Override
-    public List<ParkEntity> findByPeakOfParkPeakNameIgnoreCase(String value) {
-        return parkRepo.findByPeakOfParkPeakNameIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByPeakOfParkPeakHeight(String value) {
-        return parkRepo.findByPeakOfParkPeakHeight(Integer.valueOf(value));
-    }
-
-    @Override
-    public List<ParkEntity> findByAtractionIgnoreCase(String value) {
-        return parkRepo.findByAtractionIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByEventIgnoreCase(String value) {
-        return parkRepo.findByEventIgnoreCase(value);
-    }
-
-
-    @Override
-    public List<ParkEntity> findAllByCountyIgnoreCase(String value) {
-        return parkRepo.findAllByCountyIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByParkAnimalsNameIgnoreCase(String value) {
-        return parkRepo.findByParkAnimalsNameIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByParkAnimalsSpeciesIgnoreCase(String value) {
-        return parkRepo.findByParkAnimalsSpeciesIgnoreCase(value);
-    }
-
-    @Override
-    public List<ParkEntity> findByAllAttributesWithoutPeak(String value) {
-        return parkRepo.findByAllAttributesWithoutPeak(value);
-    }
-
-    @Override
     public ParkEntity getParkByID(Integer parkId) {
         return parkRepo.findById(parkId)
                 .orElseThrow(() -> new EntityNotFoundException("Park not found"));
@@ -123,6 +62,25 @@ public class ParkServiceImpl implements ParkService {
         ParkEntity park = parkRepo.findById(parkID)
                 .orElseThrow(() -> new EntityNotFoundException("Peak not found"));
         return park.getPeakOfPark();
+    }
+
+    @Override
+    public List<ParkEntity> findByAttribute(String attribute, String value) {
+        return switch (attribute) {
+            case "parkName" -> parkRepo.findByParkNameIgnoreCaseContains(value);
+            case "typeOfPark" -> parkRepo.findByTypeOfParkTypeOfParkNameIgnoreCaseContains(value);
+            case "yearOfFoundation" -> parkRepo.findByYearOfFoundation(Integer.valueOf(value));
+            case "area" -> parkRepo.findByAreaEquals(Double.valueOf(value));
+            case "peakName" -> parkRepo.findByPeakOfParkPeakNameIgnoreCaseContains(value);
+            case "peakHeight" -> parkRepo.findByPeakOfParkPeakHeight(Integer.valueOf(value));
+            case "countyName" -> parkRepo.findAllByCountyIgnoreCase(value);
+            case "atraction" -> parkRepo.findByAtractionIgnoreCaseContains(value);
+            case "event" -> parkRepo.findByEventIgnoreCaseContains(value);
+            case "animalName" -> parkRepo.findByParkAnimalsNameIgnoreCase(value);
+            case "speciesOfAnimal" -> parkRepo.findByParkAnimalsSpeciesIgnoreCase(value);
+            case "wildcard" -> parkRepo.findByAllAttributes(value);
+            default -> null;
+        };
     }
 
 

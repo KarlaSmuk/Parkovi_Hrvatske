@@ -11,14 +11,15 @@ import java.util.List;
 @Repository
 public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
 
-    List<ParkEntity> findByParkNameIgnoreCase(String parkName);
+    List<ParkEntity> findByParkNameIgnoreCaseContains(String parkName);
+
     List<ParkEntity> findByYearOfFoundation(Integer yearOfFoundation);
 
-    List<ParkEntity> findByTypeOfParkTypeOfParkNameIgnoreCase(String value);
+    List<ParkEntity> findByTypeOfParkTypeOfParkNameIgnoreCaseContains(String value);
 
     List<ParkEntity> findByAreaEquals(Double value);
 
-    List<ParkEntity> findByPeakOfParkPeakNameIgnoreCase(String value);
+    List<ParkEntity> findByPeakOfParkPeakNameIgnoreCaseContains(String value);
 
     List<ParkEntity> findByPeakOfParkPeakHeight(Integer value);
 
@@ -27,9 +28,9 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
             "WHERE UPPER(c.countyName) LIKE CONCAT('%', UPPER(:value), '%')")
     List<ParkEntity> findAllByCountyIgnoreCase(@Param("value") String value);
 
-    List<ParkEntity> findByAtractionIgnoreCase(String value);
+    List<ParkEntity> findByAtractionIgnoreCaseContains(String value);
 
-    List<ParkEntity> findByEventIgnoreCase(String value);
+    List<ParkEntity> findByEventIgnoreCaseContains(String value);
 
     @Query("SELECT p FROM ParkEntity p " +
             "JOIN p.parkAnimals u " +
@@ -47,16 +48,16 @@ public interface ParkRepository extends JpaRepository<ParkEntity, Integer> {
             "LEFT JOIN p.peakOfPark pp " +
             "WHERE UPPER(p.parkName) LIKE CONCAT('%', UPPER(:value), '%') " +
             "OR UPPER(p.typeOfPark.typeOfParkName) LIKE CONCAT('%', UPPER(:value), '%') " +
-            "OR CAST(p.yearOfFoundation as string ) LIKE CONCAT('%', :value, '%') " +
-            "OR CAST(p.area as string ) LIKE CONCAT('%', :value, '%') " +
+            "OR CAST(p.yearOfFoundation as string ) = :value " +
+            "OR CAST(p.area as string ) = :value " +
             "OR UPPER(pp.peakName) LIKE CONCAT('%', UPPER(:value), '%') " +
-            "OR CAST(pp.peakHeight as string) LIKE CONCAT('%', :value, '%') " +
+            "OR CAST(pp.peakHeight as string) = :value " +
             "OR UPPER(pc.countyName) LIKE CONCAT('%', UPPER(:value), '%') " +
             "OR UPPER(p.atraction) LIKE CONCAT('%', UPPER(:value), '%') " +
             "OR UPPER(p.event) LIKE CONCAT('%', UPPER(:value), '%') " +
             "OR UPPER(pa.animalName) LIKE CONCAT('%', UPPER(:value), '%') " +
             "OR UPPER(pa.speciesOfAnimal) LIKE CONCAT('%', UPPER(:value), '%') ")
-    List<ParkEntity> findByAllAttributesWithoutPeak(String value);
+    List<ParkEntity> findByAllAttributes(String value);
 
     Boolean existsByParkName(String parkName);
 
