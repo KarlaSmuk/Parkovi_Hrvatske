@@ -6,17 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" type="text/css" href="css/datatable.css" />
-  <script defer src="js/app.js"></script>
-  
+  <script src="js/app.js"></script>
+  <script src="js/auth0.js"></script>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
   <title>Datatable</title>
 </head>
 
-<body onload="fetchAll()">
+<body onload="fetchAll(), initAuth()">
 
   <nav>
-    <li><a href="/login/"><button type="button">Login</button></a></li>
-    <li><a href="/logout/"><button type="button">Logout</button></a></li>
+    <button id="btn-login" disabled="true" onclick="login()">Prijava</button>
+    <button id="btn-logout" disabled="true" onclick="logout()">Odjava</button>
+    <div id="profile" disabled="true"></div>
   </nav>
+
 
   <div class="search-container">
 
@@ -45,14 +48,19 @@
     <button type="button" onclick="filterTable()">Pretraži</button>
   </div>
 
-  <div class="download-buttons-container">
-    <button onclick="downloadAsJSON()">
+  <div class="links">
+    <a href="/korisnicki-profil" id="profile-link" class="hidden">Korisnički profil</a>
+    <a href="/osvjezi-preslike" id="refresh-data-link" class="hidden">Osvježi preslike</a>
+  </div>
+
+  <!--<div class="download-buttons-container">
+    <button class="download-button" onclick="downloadAsJSON()" disabled="true">
       Poveznica za filtrirani skup u JSON formatu
     </button>
-    <button onclick="downloadAsCSV()">
+    <button class="download-button" onclick="downloadAsCSV()" disabled="true">
       Poveznica za filtrirani skup u CSV formatu
     </button>
-  </div>
+  </div>-->
 
   <p class="list-all" onclick="fetchAll()">Prikaži cijelu listu</p>
 

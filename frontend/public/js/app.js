@@ -93,57 +93,63 @@ function clearTable() {
 
 function sendData(data) {
 
-    //console.log(JSON.stringify(data));
-
-    fetch('http://localhost:8080/search/sendData', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-    //   .then(response => response.json()) 
-    //   .then(data => {
-    //       console.log(data);
-    //   })
-    //   .catch(error => {
-    //       console.error('Error:', error);
-    //   });
-
-    
+  fetch("http://localhost:8080/search/sendData", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 }
 
 function downloadAsJSON() {
-    
-    fetch('http://localhost:8080/search/downloadJson')
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'parks.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
 
+  let jsonFileUrl = "../data/data.json";
+
+  var link = document.createElement("a");
+  link.href = jsonFileUrl;
+  link.download = "data.json";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  /*fetch("http://localhost:8080/search/downloadJson")
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "parks.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => console.error("Error:", error));*/
 }
 
 function downloadAsCSV() {
 
-    fetch('http://localhost:8080/search/downloadCSV')
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'parks.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
+  let jsonFileUrl = "../data/data.csv";
+
+  var link = document.createElement("a");
+  link.href = jsonFileUrl;
+  link.download = "data.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  /*fetch("http://localhost:8080/search/downloadCSV")
+    .then((response) => response.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "parks.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => console.error("Error:", error));*/
 }

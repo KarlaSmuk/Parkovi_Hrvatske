@@ -145,3 +145,34 @@ a button{
 button:hover{
     cursor: pointer;
 }
+
+.hidden {
+    display: none;
+}
+  
+label { 
+    margin-bottom: 10px;
+    display: block;
+}
+
+a{
+    text-decoration: none;
+    color:#009879;
+}
+
+a:hover{
+    color: black;
+}
+
+.links{
+    display: flex;
+    flex-direction: column;
+}
+
+#download-link {
+    margin-top: 1rem;
+}
+
+img{
+    border-radius: 50%;
+}
