@@ -70,18 +70,19 @@ async function initAuth() {
 }
 
 const updateUI = async () => {
-  //const isAuthenticated = await auth0Client.isAuthenticated();
-  let isAuthenticated;
 
-  if(loggingOut){
-    isAuthenticated = false;
-    loggingOut = false;
+  const isAuthenticated = await auth0Client.isAuthenticated();
+
+  if (isAuthenticated) {
+    document.getElementById("btn-logout").classList.remove("hidden");
+    document.getElementById("btn-login").classList.add("hidden");
   }else{
-    isAuthenticated = await auth0Client.isAuthenticated();
+    document.getElementById("btn-login").classList.remove("hidden");
+    document.getElementById("btn-logout").classList.add("hidden");
   }
 
-  document.getElementById("btn-logout").disabled = !isAuthenticated;
-  document.getElementById("btn-login").disabled = isAuthenticated;
+  // document.getElementById("btn-logout").disabled = !isAuthenticated;
+  // document.getElementById("btn-login").disabled = isAuthenticated;
 
   const downloadButtons = document.querySelectorAll(".download-button");
   downloadButtons.forEach((button) => {
@@ -189,20 +190,16 @@ const login = async () => {
     });
 
   }
-
   
 };
 
-const logout = () => {
-  // auth0Client.logout({
-  //   logoutParams: {
-  //     returnTo: window.location.origin,
-  //   },
-  // });
-  loggingOut = true;
-
-  // Redirect to the home page or another appropriate location
-  //window.location.href = '/';
+const logout = async () => {
+  
+  await auth0Client.logout({
+    onRedirect: async () => {
+      console.log('Logging out localy...');
+    }
+  })
 
   updateUI();
 };
