@@ -1,5 +1,10 @@
 package or.labos.application.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
+import ioinformarics.oss.jackson.module.jsonld.JsonldResource;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -11,7 +16,6 @@ import or.labos.application.entity.ParkEntity;
 import or.labos.application.service.ParkService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +33,9 @@ public class ParkRestController {
     @Autowired
     private ParkService parkService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private final ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping(value = "", produces = "application/json")
@@ -39,16 +46,17 @@ public class ParkRestController {
             return ResponseEntity.noContent().build();
         }
 
-        List<ParkResponseDto> parkResponseDtos = parks.stream()
-                .map(park -> modelMapper.map(park, ParkResponseDto.class))
+        List<JsonldResource> parkResponseDtos = parks.stream()
+                .map(park -> JsonldResource.Builder.create().build(modelMapper.map(park, ParkResponseDto.class)))
                 .collect(Collectors.toList());
 
-        parkResponseDtos.forEach(parkResponseDto -> {
+        /*parkResponseDtos.forEach(parkResponseDto -> {
             parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkResponseDto.getParkId())).withSelfRel());
             parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkResponseDto.getParkId())).withRel("counties").withType("GET"));
             parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkResponseDto.getParkId())).withRel("animals").withType("GET"));
 
-        });
+        });*/
+
 
         Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched all parks", parkResponseDtos);
 
@@ -56,7 +64,7 @@ public class ParkRestController {
     }
 
     @GetMapping(value = "/{parkId}", produces="application/json")
-    public ResponseEntity<?> getParkByID(@PathVariable Integer parkId) {
+    public ResponseEntity<?> getParkByID(@PathVariable Integer parkId) throws JsonProcessingException {
 
         Optional<ParkEntity> parkOptional = Optional.ofNullable(parkService.getParkByID(parkId));
 
@@ -68,13 +76,14 @@ public class ParkRestController {
 
         ParkResponseDto parkResponseDto = modelMapper.map(park, ParkResponseDto.class);
 
-        parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
+        /*parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getParkByID(parkId)).withSelfRel());
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getCountiesByPark(parkId)).withRel("counties").withType("GET"));
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getAnimalsByPark(parkId)).withRel("animals").withType("GET"));
         parkResponseDto.add(linkTo(methodOn(ParkRestController.class).getPeakByParkID(parkId)).withRel("peak").withType("GET"));
+        */
 
-
-        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched park with ID " + parkId, parkResponseDto);
+        JsonldResource jsonldResource = JsonldResource.Builder.create().build(parkResponseDto);
+        Response<Object> responseDtos = new Response<>(HttpStatus.OK, "Fetched park with ID " + parkId, jsonldResource);
 
         return ResponseEntity.ok(responseDtos);
     }
@@ -142,7 +151,7 @@ public class ParkRestController {
     }
 
     @PostMapping(value = "", produces = "application/json")
-    public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) {
+    public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) throws JsonProcessingException {
 
 
             if (parkService.parkExists(createParkRequest.getParkName())) {
@@ -160,7 +169,7 @@ public class ParkRestController {
     }
 
     @PutMapping(value = "/{parkID}", produces = "application/json")
-    public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest){
+    public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest) throws JsonProcessingException {
 
         ParkEntity newPark;
 
