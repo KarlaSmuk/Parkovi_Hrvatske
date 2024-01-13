@@ -33,9 +33,6 @@ public class ParkRestController {
     @Autowired
     private ParkService parkService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private final ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping(value = "", produces = "application/json")

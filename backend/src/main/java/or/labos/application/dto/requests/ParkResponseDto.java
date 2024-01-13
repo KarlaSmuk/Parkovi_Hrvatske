@@ -18,7 +18,6 @@ import java.util.*;
 @JsonldType("https://schema.org/TouristDestination")
 public class ParkResponseDto extends RepresentationModel<ParkResponseDto>{
 
-    @JsonldId
     private Integer parkId;
     @JsonldProperty("https://schema.org/name")
     private String parkName;

@@ -19,8 +19,6 @@ const configureClient = async () => {
   });
 };
 
-
-
 async function initAuth() {
   await configureClient();
 
@@ -29,33 +27,31 @@ async function initAuth() {
   // handle coming back from login
   const query = window.location.search;
   if (query.includes("code=") && query.includes("state=")) {
-
     // const accessToken = await auth0Client.getTokenSilently();
     // localStorage.setItem('accessToken', accessToken);
 
     try {
-
       // Process the login state
       console.log("Handling redirect callback...");
       await auth0Client.handleRedirectCallback();
       console.log("Redirect callback handled.");
 
-      if(isTokenExpired(localStorage.getItem('id_token'))){
+      if (isTokenExpired(localStorage.getItem("id_token"))) {
         const claims = await auth0Client.getIdTokenClaims();
         const id_token = claims.__raw;
-        const decodedToken = JSON.parse(atob(id_token.split('.')[1]));
-  
+        const decodedToken = JSON.parse(atob(id_token.split(".")[1]));
+
         // // Calculate the expiration time
         const expiresAt = new Date(decodedToken.exp * 1000);
-  
-        console.log(expiresAt)
-  
-        localStorage.setItem('id_token', id_token);
+
+        console.log(expiresAt);
+        console.log(decodedToken)
+
+        localStorage.setItem("id_token", id_token);
       }
 
-      console.log(isTokenExpired(localStorage.getItem('id_token')));
-      
-      
+      console.log(isTokenExpired(localStorage.getItem("id_token")));
+
       updateUI();
 
       // Use replaceState to redirect the user away and remove the querystring parameters
@@ -70,13 +66,12 @@ async function initAuth() {
 }
 
 const updateUI = async () => {
-
   const isAuthenticated = await auth0Client.isAuthenticated();
 
   if (isAuthenticated) {
     document.getElementById("btn-logout").classList.remove("hidden");
     document.getElementById("btn-login").classList.add("hidden");
-  }else{
+  } else {
     document.getElementById("btn-login").classList.remove("hidden");
     document.getElementById("btn-logout").classList.add("hidden");
   }
@@ -133,19 +128,25 @@ const updateUI = async () => {
               <div id="user-info"></div>
             `;
 
-      const userInfo = await auth0Client.getUser();
+      try {
+        const userInfo = await auth0Client.getUser();
 
-      const userInfoDiv = document.getElementById("user-info");
-      userInfoDiv.innerHTML = `
-                <img src="${userInfo.picture}" alt="Profile Picture">
-                <p>Email: ${userInfo.email}</p>
-                <p>Nickname: ${userInfo.nickname}</p>
-            `;
+        console.log(userInfo)
+
+        const userInfoDiv = document.getElementById("user-info");
+        userInfoDiv.innerHTML = `
+                  <img src="${userInfo.picture}" alt="Profile Picture">
+                  <p>Email: ${userInfo.email}</p>
+                  <p>Nickname: ${userInfo.nickname}</p>
+              `;
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
     }
 
     if (isRefreshPage) {
       document.body.innerHTML = `
-          <h1>Preuzmi podatke iz baze.</p>
+          <h1>Preuzmi podatke iz baze.</h1>
               <div class="download-buttons-container">
                   <button class="download-button" onclick="downloadAsJSON()">
                       Preuzmi skup podataka iz baze u JSON formatu
@@ -168,38 +169,31 @@ const updateUI = async () => {
 };
 
 const login = async () => {
-
-  const token = localStorage.getItem('id_token');
+  const token = localStorage.getItem("id_token");
   const expired = isTokenExpired(token);
 
-  if(expired){
-
-    await auth0Client.loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: window.location.origin
-      }
-    });
-
-  }else{
-
+  if (expired) {
     await auth0Client.loginWithRedirect({
       authorizationParams: {
         redirect_uri: window.location.origin,
-        prompt: 'none'
-      }
+      },
     });
-
+  } else {
+    await auth0Client.loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: window.location.origin,
+        prompt: "none",
+      },
+    });
   }
-  
 };
 
 const logout = async () => {
-  
   await auth0Client.logout({
     onRedirect: async () => {
-      console.log('Logging out localy...');
-    }
-  })
+      console.log("Logging out localy...");
+    },
+  });
 
   updateUI();
 };
@@ -210,9 +204,8 @@ const isTokenExpired = (token) => {
     return true;
   }
 
-  const decodedToken = JSON.parse(atob(token.split('.')[1]));
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
   const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
 
   return Date.now() > expirationTime;
 };
-
