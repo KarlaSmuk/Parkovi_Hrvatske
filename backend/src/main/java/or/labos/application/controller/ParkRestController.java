@@ -61,7 +61,7 @@ public class ParkRestController {
     }
 
     @GetMapping(value = "/{parkId}", produces="application/json")
-    public ResponseEntity<?> getParkByID(@PathVariable Integer parkId) throws JsonProcessingException {
+    public ResponseEntity<?> getParkByID(@PathVariable Integer parkId) {
 
         Optional<ParkEntity> parkOptional = Optional.ofNullable(parkService.getParkByID(parkId));
 
@@ -148,7 +148,7 @@ public class ParkRestController {
     }
 
     @PostMapping(value = "", produces = "application/json")
-    public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) throws JsonProcessingException {
+    public ResponseEntity<?> addNewPark(@RequestBody @Valid CreateParkRequest createParkRequest) {
 
 
             if (parkService.parkExists(createParkRequest.getParkName())) {
@@ -166,7 +166,7 @@ public class ParkRestController {
     }
 
     @PutMapping(value = "/{parkID}", produces = "application/json")
-    public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest) throws JsonProcessingException {
+    public ResponseEntity<?> updatePark(@PathVariable Integer parkID, @Valid @RequestBody CreateParkRequest createParkRequest) {
 
         ParkEntity newPark;
 
