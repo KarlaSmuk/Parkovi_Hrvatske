@@ -48,9 +48,14 @@ app.get('/', (_, res) => {
   res.sendFile(join(__dirname, "datatable.html"));
 });
 
-app.get('/profile', checkAuth);
+app.get('/profile', checkAuth,(_, res) => {
+  res.redirect('/');
+});
 
-app.get('/refreshData', checkAuth);
+app.get('/refreshData', checkAuth,(_, res) => {
+  res.redirect('/');
+});
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
