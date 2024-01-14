@@ -1,102 +1,57 @@
-let auth0Client = null;
-let loggingOut = false;
+const BASE_URL = window.location.origin;
+const CHECK_AUTH_URL = "/checkAuthentication";
+const LOGIN_URL = "/login";
+const LOGOUT_URL = "/logout";
+const USER_INFO_URL = "/userInfo";
+const PROFILE_URL = "/profile";
+const DATA_URL = "/refreshData";
 
-const fetchAuthConfig = () => fetch("/auth_config.json");
+let isAuthenticated = false;
 
-const configureClient = async () => {
-  const response = await fetchAuthConfig();
-  const config = await response.json();
-
-  // Check if auth0 is defined before using it
-  if (typeof auth0 === "undefined") {
-    console.error("Auth0 SDK is not loaded.");
-    return;
+const fetchAuth = async () => {
+  try {
+    const response = await fetch(CHECK_AUTH_URL);
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching authentication status:", error);
+    throw error;
   }
-  auth0Client = await auth0.createAuth0Client({
-    domain: config.domain,
-    clientId: config.client_id,
-    scope: 'openid profile email'
-  });
 };
 
-async function initAuth() {
-  await configureClient();
-
-  updateUI();
-
-  // handle coming back from login
-  const query = window.location.search;
-  if (query.includes("code=") && query.includes("state=")) {
-    // const accessToken = await auth0Client.getTokenSilently();
-    // localStorage.setItem('accessToken', accessToken);
-
-    try {
-      // Process the login state
-      console.log("Handling redirect callback...");
-      await auth0Client.handleRedirectCallback();
-      console.log("Redirect callback handled.");
-
-      if (isTokenExpired(localStorage.getItem("id_token"))) {
-        const claims = await auth0Client.getIdTokenClaims();
-        const id_token = claims.__raw;
-        const decodedToken = JSON.parse(atob(id_token.split(".")[1]));
-
-        // // Calculate the expiration time
-        const expiresAt = new Date(decodedToken.exp * 1000);
-
-        console.log(expiresAt);
-        console.log(decodedToken)
-
-        localStorage.setItem("id_token", id_token);
-      }
-
-      console.log(isTokenExpired(localStorage.getItem("id_token")));
-
-      updateUI();
-
-      // Use replaceState to redirect the user away and remove the querystring parameters
-      window.history.replaceState({}, document.title, "/");
-    } catch (error) {
-      // Handle errors, e.g., if the user needs to log in again
-      console.error("Error handling redirect callback:", error);
-      // Redirect the user to the login page with a full-page redirect
-      await auth0Client.loginWithRedirect();
-    }
-  }
-}
+const configureClient = async () => {
+  isAuthenticated = await fetchAuth();
+};
 
 const updateUI = async () => {
-  const isAuthenticated = await auth0Client.isAuthenticated();
-
   if (isAuthenticated) {
     document.getElementById("btn-logout").classList.remove("hidden");
     document.getElementById("btn-login").classList.add("hidden");
+
+    document.getElementById("profile-link").classList.remove("hidden");
+    document.getElementById("refresh-data-link").classList.remove("hidden");
+
+    document.querySelector(".download-button:nth-child(1)").classList.remove("hidden");
+    document.querySelector(".download-button:nth-child(2)").classList.remove("hidden"); 
   } else {
     document.getElementById("btn-login").classList.remove("hidden");
     document.getElementById("btn-logout").classList.add("hidden");
+
+    document.getElementById("profile-link").classList.add("hidden");
+    document.getElementById("refresh-data-link").classList.add("hidden");
+
+    document.querySelector(".download-button:nth-child(1)").classList.add("hidden"); 
+    document.querySelector(".download-button:nth-child(2)").classList.add("hidden"); 
   }
-
-  // document.getElementById("btn-logout").disabled = !isAuthenticated;
-  // document.getElementById("btn-login").disabled = isAuthenticated;
-
-  const downloadButtons = document.querySelectorAll(".download-button");
-  downloadButtons.forEach((button) => {
-    button.disabled = !isAuthenticated;
-  });
 
   const profileLink = document.getElementById("profile-link");
   const refreshLink = document.getElementById("refresh-data-link");
 
-  // Check if the user is on the korisnicki-profil page
-  const isUserProfilePage = window.location.pathname === "/korisnicki-profil";
-  const isRefreshPage = window.location.pathname === "/osvjezi-preslike";
-
   if (isAuthenticated) {
-    // Show the profile link
-    profileLink.classList.remove("hidden");
-    refreshLink.classList.remove("hidden");
 
     refreshLink.addEventListener("click", async function (event) {
+
+      event.preventDefault();
+
       try {
         // Fetch data from the backend for refreshing
         const response = await fetch("http://localhost:8080/refreshData", {
@@ -118,94 +73,65 @@ const updateUI = async () => {
       }
     });
 
-    // Check if the user is on the korisnicki-profil page
-    const isUserProfilePage = window.location.pathname === "/korisnicki-profil";
+    profileLink.addEventListener("click", async function (event) {
+      event.preventDefault(); // Prevent the default link behavior (page navigation)
 
-    if (isUserProfilePage) {
-      // Update the look of the page for authenticated users on the user profile page
-      document.body.innerHTML = `
-              <h1>Korisnički profil</h1>
-              <div id="user-info"></div>
-            `;
+      const userProfileContainer = document.getElementById("user-profile-container");
 
-      try {
-        const userInfo = await auth0Client.getUser();
-
-        console.log(userInfo)
-
-        const userInfoDiv = document.getElementById("user-info");
-        userInfoDiv.innerHTML = `
-                  <img src="${userInfo.picture}" alt="Profile Picture">
-                  <p>Email: ${userInfo.email}</p>
-                  <p>Nickname: ${userInfo.nickname}</p>
-              `;
-      } catch (error) {
-        console.error("Error fetching user information:", error);
-      }
-    }
-
-    if (isRefreshPage) {
-      document.body.innerHTML = `
-          <h1>Preuzmi podatke iz baze.</h1>
-              <div class="download-buttons-container">
-                  <button class="download-button" onclick="downloadAsJSON()">
-                      Preuzmi skup podataka iz baze u JSON formatu
-                  </button>
-                  <button class="download-button" onclick="downloadAsCSV()">
-                    Preuzmi skup podataka iz baze u CSV formatu
-                  </button>
-              </div>
+      if (userProfileContainer.classList.contains("hidden")) {
+        try {
+          const response = await fetch(USER_INFO_URL);
+  
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+  
+          const userInfo = await response.json();
+  
+          // Create and append user profile HTML
+          userProfileContainer.innerHTML = `
+            <div id="user-info">
+              <img src="${userInfo.picture}" alt="Profile Picture">
+              <p>sub: ${userInfo.sub}</p>
+              <p>Email: ${userInfo.email}</p>
+              <p>Name: ${userInfo.name}</p>
+              <p>Nickname: ${userInfo.nickname}</p>
+              <p>Updated at: ${userInfo.updated_at}</p>
+              <p>Email verified: ${userInfo.email_verified}</p>
+            </div>
           `;
-    }
+  
+          // Show the user profile container
+          userProfileContainer.classList.remove("hidden");
+          // Handle the response if needed
+          console.log("User data fetch successfully");
+        } catch (error) {
+          console.error("Error fetching user information:", error);
+        }
+      } else {
+        // Hide the user profile container if it's already visible
+        userProfileContainer.classList.add("hidden");
+      }
+    });
   } else {
     refreshLink.classList.add("hidden");
     profileLink.classList.add("hidden");
-
-    if (isUserProfilePage || isRefreshPage) {
-      // User is not authenticated, throw an error
-      throw new Error("User is not authenticated");
-    }
   }
 };
 
 const login = async () => {
-  const token = localStorage.getItem("id_token");
-  const expired = isTokenExpired(token);
-
-  if (expired) {
-    await auth0Client.loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: window.location.origin,
-      },
-    });
-  } else {
-    await auth0Client.loginWithRedirect({
-      authorizationParams: {
-        redirect_uri: window.location.origin,
-        prompt: "none",
-      },
-    });
-  }
+  window.location.href = BASE_URL + LOGIN_URL;
 };
 
 const logout = async () => {
-  await auth0Client.logout({
-    onRedirect: async () => {
-      console.log("Logging out localy...");
-    },
-  });
-
-  updateUI();
+  window.location.href = BASE_URL + LOGOUT_URL;
 };
 
-const isTokenExpired = (token) => {
-  if (!token) {
-    // Token not provided
-    return true;
+async function initAuth() {
+  try {
+    await configureClient();
+    updateUI();
+  } catch (error) {
+    console.error("Authentication initialization error:", error);
   }
-
-  const decodedToken = JSON.parse(atob(token.split(".")[1]));
-  const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
-
-  return Date.now() > expirationTime;
-};
+}
