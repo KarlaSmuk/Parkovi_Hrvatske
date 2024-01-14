@@ -92,12 +92,9 @@ const updateUI = async () => {
           userProfileContainer.innerHTML = `
             <div id="user-info">
               <img src="${userInfo.picture}" alt="Profile Picture">
-              <p>sub: ${userInfo.sub}</p>
               <p>Email: ${userInfo.email}</p>
               <p>Name: ${userInfo.name}</p>
               <p>Nickname: ${userInfo.nickname}</p>
-              <p>Updated at: ${userInfo.updated_at}</p>
-              <p>Email verified: ${userInfo.email_verified}</p>
             </div>
           `;
   
